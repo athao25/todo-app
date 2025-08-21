@@ -3,8 +3,12 @@
     <!-- Dropdown Button -->
     <button
       @click="toggleDropdown"
+      :disabled="disabled"
       class="w-full rounded-lg bg-white/20 border-white/30 text-white shadow-sm focus:border-indigo-400 focus:ring-indigo-400 transition-colors duration-200 px-3 py-2 text-left flex items-center justify-between"
-      :class="{ 'border-indigo-400 ring-1 ring-indigo-400': isOpen }"
+      :class="{ 
+        'border-indigo-400 ring-1 ring-indigo-400': isOpen && !disabled,
+        'opacity-50 cursor-not-allowed': disabled 
+      }"
     >
       <span class="truncate">{{ selectedOption?.label || placeholder }}</span>
       <ChevronDownIcon 
@@ -64,6 +68,7 @@ interface Props {
   modelValue: string
   options: DropdownOption[]
   placeholder?: string
+  disabled?: boolean
 }
 
 interface Emits {
@@ -72,7 +77,8 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: 'Select an option'
+  placeholder: 'Select an option',
+  disabled: false
 })
 
 const emit = defineEmits<Emits>()
@@ -104,6 +110,8 @@ const dropdownStyle = computed(() => {
 })
 
 function toggleDropdown() {
+  if (props.disabled) return
+  
   isOpen.value = !isOpen.value
   if (isOpen.value) {
     // Force a recompute of the dropdown style

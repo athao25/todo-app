@@ -43,16 +43,12 @@
             <label for="priority" class="block text-sm font-medium text-white/90 mb-1">
               Priority
             </label>
-            <select
-              id="priority"
+            <CustomDropdown
               v-model="form.priority"
-              class="block w-full rounded-lg bg-white/20 border-white/30 text-white shadow-sm focus:border-indigo-400 focus:ring-indigo-400 sm:text-sm transition-colors duration-200"
+              :options="priorityOptions"
+              placeholder="Select priority"
               :disabled="loading"
-            >
-              <option value="low" class="text-gray-800">Low Priority</option>
-              <option value="medium" class="text-gray-800">Medium Priority</option>
-              <option value="high" class="text-gray-800">High Priority</option>
-            </select>
+            />
           </div>
 
           <!-- Due Date Input -->
@@ -92,6 +88,7 @@ import { ref, computed } from 'vue'
 import { useTodoStore } from '@/stores/todos'
 import type { CreateTodoData } from '@/types'
 import { PlusIcon } from '@heroicons/vue/24/outline'
+import CustomDropdown from './CustomDropdown.vue'
 
 const emit = defineEmits<{
   created: []
@@ -100,13 +97,20 @@ const emit = defineEmits<{
 const todoStore = useTodoStore()
 const loading = ref(false)
 
-// Form data
-const form = ref<CreateTodoData & { due_date: string }>({
+// Form data with required priority for UI
+const form = ref<CreateTodoData & { due_date: string; priority: 'low' | 'medium' | 'high' }>({
   title: '',
   description: '',
   priority: 'medium',
   due_date: ''
 })
+
+// Priority dropdown options
+const priorityOptions = [
+  { value: 'high', label: 'High Priority', icon: '🔴' },
+  { value: 'medium', label: 'Medium Priority', icon: '🟡' },
+  { value: 'low', label: 'Low Priority', icon: '🟢' }
+]
 
 // Minimum datetime (current time)
 const minDateTime = computed(() => {
