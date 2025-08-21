@@ -97,10 +97,12 @@
           </span>
           <div v-else class="relative inline-block">
             <CustomDropdown
+              ref="priorityDropdown"
               v-model="editValues.priority"
               :options="priorityOptions"
               placeholder="Select priority"
               @update:model-value="onPriorityChange"
+              @close="onPriorityDropdownClose"
             />
           </div>
 
@@ -216,6 +218,7 @@ const editValues = ref({
 const titleInput = ref<HTMLInputElement>()
 const descriptionInput = ref<HTMLTextAreaElement>()
 const dueDateInput = ref<HTMLInputElement>()
+const priorityDropdown = ref<InstanceType<typeof CustomDropdown>>()
 
 // Priority badge styling
 const priorityBadgeClass = computed(() => {
@@ -307,6 +310,13 @@ function onPriorityChange(newPriority: string) {
   saveField('priority')
 }
 
+function onPriorityDropdownClose() {
+  // If the dropdown closes without making a change, cancel the edit
+  if (editValues.value.priority === props.todo.priority) {
+    cancelEdit('priority')
+  }
+}
+
 async function startEditingField(field: keyof typeof editingField.value) {
   // Set the edit value to current value
   switch (field) {
@@ -341,6 +351,10 @@ async function startEditingField(field: keyof typeof editingField.value) {
       break
     case 'description':
       descriptionInput.value?.focus()
+      break
+    case 'priority':
+      // Automatically open the dropdown
+      priorityDropdown.value?.openDropdown()
       break
     case 'due_date':
       dueDateInput.value?.focus()
