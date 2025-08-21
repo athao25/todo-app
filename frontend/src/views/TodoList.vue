@@ -5,70 +5,48 @@
       <TodoCreateForm @todo-created="handleTodoCreated" />
     </div>
 
-    <!-- Filters & Sort -->
-    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6 mb-6 border border-white/20">
-      <div class="mb-3">
-        <h3 class="text-sm font-medium text-white/90 flex items-center">
-          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 2v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-          </svg>
-          Filter & Sort Options
-        </h3>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <!-- Status Filter -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            📋 Status
-          </label>
-          <CustomDropdown
-            v-model="filters.completed"
-            :options="statusOptions"
-            placeholder="All Todos"
-            @update:model-value="loadTodos"
-          />
-        </div>
-
-        <!-- Priority Filter -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            ⚡ Priority
-          </label>
-          <CustomDropdown
-            v-model="filters.priority"
-            :options="priorityOptions"
-            placeholder="All Priorities"
-            @update:model-value="loadTodos"
-          />
-        </div>
-
-        <!-- Sort Options -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            🔄 Sort By
-          </label>
-          <CustomDropdown
-            v-model="sortBy"
-            :options="sortOptions"
-            placeholder="Sort By"
-            @update:model-value="applySorting"
-          />
-        </div>
-
-        <!-- Actions -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            🧹 Actions
-          </label>
-          <button
-            @click="clearFilters"
-            class="w-full px-4 py-2 text-sm font-medium text-white/90 bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-400/30 rounded-lg hover:from-red-500/30 hover:to-pink-500/30 hover:border-red-400/50 focus:outline-none focus:ring-2 focus:ring-red-400/50 transition-all duration-200 shadow-lg"
-          >
-            ✨ Clear All
-          </button>
-        </div>
-      </div>
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-2 mb-6">
+      <button
+        @click="setFilter('all')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'all' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        All
+      </button>
+      <button
+        @click="setFilter('active')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'active' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        Active
+      </button>
+      <button
+        @click="setFilter('completed')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'completed' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        Completed
+      </button>
+      <button
+        v-if="completedCount > 0"
+        @click="clearCompleted"
+        class="px-3 py-1 rounded-full text-sm font-medium text-red-200 hover:text-red-100 hover:bg-red-500/20 transition-colors duration-200"
+      >
+        Clear completed
+      </button>
     </div>
 
     <!-- Todo List -->
