@@ -84,11 +84,17 @@ const selectedOption = computed(() => {
 })
 
 const dropdownStyle = computed(() => {
-  if (!isOpen.value || !dropdownRef.value) return {}
+  if (!isOpen.value || !dropdownRef.value) return {
+    position: undefined,
+    top: undefined,
+    left: undefined,
+    width: undefined,
+    minWidth: undefined
+  }
   
   const rect = dropdownRef.value.getBoundingClientRect()
   return {
-    position: 'fixed',
+    position: 'fixed' as const,
     top: `${rect.bottom + 4}px`,
     left: `${rect.left}px`,
     width: `${rect.width}px`,

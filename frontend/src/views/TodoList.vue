@@ -111,7 +111,7 @@ import { useTodoStore } from '../stores/todos'
 import TodoCreateForm from '../components/TodoCreateForm.vue'
 import TodoItem from '../components/TodoItem.vue'
 import CustomDropdown from '../components/CustomDropdown.vue'
-import type { Todo } from '../types'
+import type { Todo, TodoFilters } from '../types'
 
 const todoStore = useTodoStore()
 
@@ -184,10 +184,24 @@ const todos = computed(() => sortedTodos.value)
 const completedCount = computed(() => todos.value.filter(todo => todo.completed).length)
 const activeCount = computed(() => todos.value.filter(todo => !todo.completed).length)
 
+const apiFilters = computed(() => {
+  const result: TodoFilters = {}
+  
+  if (filters.value.completed !== '') {
+    result.completed = filters.value.completed === 'true'
+  }
+  
+  if (filters.value.priority !== '') {
+    result.priority = filters.value.priority as 'low' | 'medium' | 'high'
+  }
+  
+  return result
+})
+
 const loadTodos = async () => {
   loading.value = true
   try {
-    await todoStore.fetchTodos(filters.value)
+    await todoStore.fetchTodos(apiFilters.value)
   } catch (error) {
     console.error('Error loading todos:', error)
   } finally {
