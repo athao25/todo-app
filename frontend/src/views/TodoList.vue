@@ -83,7 +83,7 @@
         <p class="text-white/70 text-sm mt-2">Create your first todo above!</p>
       </div>
       
-      <div v-else>
+      <div v-else class="space-y-6">
         <TodoItem
           v-for="todo in todos"
           :key="todo.id"
