@@ -5,7 +5,7 @@
 
 set -e
 
-echo "🚀 Setting up Professional Todo Application..."
+echo "🚀 Setting up Todo Application..."
 echo "=============================================="
 
 # Colors for output

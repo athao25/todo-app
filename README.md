@@ -1,4 +1,4 @@
-# Professional Todo Application
+# Todo Application
 
 A modern, sleek todo application built with Vue.js frontend and Flask backend, using PostgreSQL database. Features a professional UI/UX design with comprehensive task management capabilities.
 
