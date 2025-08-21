@@ -48,9 +48,6 @@ export const todoApi = {
       params.append('completed', filters.completed.toString())
     }
     
-    if (filters?.priority) {
-      params.append('priority', filters.priority)
-    }
     
     const response = await api.get(`/todos?${params.toString()}`)
     return response.data

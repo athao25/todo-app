@@ -18,9 +18,6 @@ export const useTodoStore = defineStore('todos', () => {
       filtered = filtered.filter(todo => todo.completed === filters.value.completed)
     }
 
-    if (filters.value.priority) {
-      filtered = filtered.filter(todo => todo.priority === filters.value.priority)
-    }
 
     return filtered
   })
@@ -35,14 +32,6 @@ export const useTodoStore = defineStore('todos', () => {
 
   const totalCount = computed(() => todos.value.length)
 
-  const todosByPriority = computed(() => {
-    const grouped = {
-      high: todos.value.filter(todo => todo.priority === 'high'),
-      medium: todos.value.filter(todo => todo.priority === 'medium'),
-      low: todos.value.filter(todo => todo.priority === 'low')
-    }
-    return grouped
-  })
 
   // Actions
   async function fetchTodos(newFilters?: TodoFilters) {
@@ -184,7 +173,6 @@ export const useTodoStore = defineStore('todos', () => {
     completedCount,
     pendingCount,
     totalCount,
-    todosByPriority,
     
     // Actions
     fetchTodos,
