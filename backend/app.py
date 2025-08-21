@@ -167,6 +167,21 @@ def create_app(config_class=Config):
             db.session.rollback()
             return jsonify({'error': str(e)}), 500
     
+    @app.route('/', methods=['GET'])
+    def home():
+        """Home page with health check"""
+        return jsonify({
+            'message': 'Todo App API',
+            'status': 'healthy',
+            'version': '1.0.0',
+            'timestamp': datetime.utcnow().isoformat(),
+            'endpoints': {
+                'health': '/api/health',
+                'todos': '/api/todos',
+                'documentation': 'Visit /api/todos for todo operations'
+            }
+        })
+    
     @app.route('/api/health', methods=['GET'])
     def health_check():
         """Health check endpoint"""
