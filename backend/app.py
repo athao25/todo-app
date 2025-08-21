@@ -14,7 +14,11 @@ def create_app(config_class=Config):
     # Initialize extensions
     db.init_app(app)
     ma.init_app(app)
-    CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'], supports_credentials=True)
+    CORS(app, origins=[
+        'http://localhost:3000', 
+        'http://localhost:3001',
+        'https://todo-app-frontend-fcip.onrender.com'
+    ], supports_credentials=True)
     migrate = Migrate(app, db)
     
     # API Routes
