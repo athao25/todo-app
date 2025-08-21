@@ -1,163 +1,78 @@
 <template>
   <div 
-    class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6 border border-white/20 hover:bg-white/15 transition-colors duration-200"
-    :class="{ 'opacity-75': todo.completed }"
+    @click="toggleSelection"
+    class="backdrop-blur-md rounded-lg shadow-xl p-4 border transition-colors duration-200 cursor-pointer"
+    :class="{
+      'bg-indigo-600/20 border-indigo-400 ring-2 ring-indigo-400': props.isSelected,
+      'bg-white/10 border-white/20 hover:bg-white/15': !props.isSelected
+    }"
   >
-    <div class="flex items-start space-x-4">
+    <div class="flex items-center space-x-3">
       <!-- Checkbox -->
-      <div class="flex-shrink-0 pt-1">
-        <button
-          @click="toggleCompleted"
-          :disabled="loading"
-          class="relative inline-flex h-5 w-5 items-center justify-center rounded border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
-          :class="{
-            'bg-indigo-600 border-indigo-600': todo.completed,
-            'hover:bg-white/30': !todo.completed
-          }"
-        >
-          <CheckIcon 
-            v-if="todo.completed"
-            class="h-3 w-3 text-white"
-          />
-        </button>
-      </div>
+      <button
+        @click.stop="toggleCompleted"
+        :disabled="loading"
+        class="relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        :class="{
+          'bg-indigo-600 border-indigo-600': todo.completed,
+          'hover:bg-white/30': !todo.completed
+        }"
+      >
+        <CheckIcon 
+          v-if="todo.completed"
+          class="h-3 w-3 text-white"
+        />
+      </button>
 
-      <!-- Content -->
+      <!-- Title -->
       <div class="flex-1 min-w-0">
-        <!-- Title -->
-        <div class="mb-2">
+        <div v-if="!editingField.title">
           <h4 
-            v-if="!editingField.title"
-            @click="startEditingField('title')"
-            class="text-lg font-medium cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
+            class="text-base font-medium px-2 py-1 rounded"
             :class="{
               'text-white': !todo.completed,
               'text-white/60 line-through': todo.completed
             }"
-            title="Click to edit"
           >
             {{ todo.title }}
           </h4>
-          <input
-            v-else
-            ref="titleInput"
-            v-model="editValues.title"
-            @blur="saveField('title')"
-            @keydown.enter="saveField('title')"
-            @keydown.escape="cancelEdit('title')"
-            class="text-lg font-medium bg-white/20 border-white/30 text-white placeholder-white/60 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 rounded px-2 py-1 w-full"
-            :class="{
-              'line-through': todo.completed
-            }"
-          />
-          
-          <!-- Description -->
-          <p 
-            v-if="todo.description && !editingField.description"
-            @click="startEditingField('description')"
-            class="mt-1 text-sm cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
-            :class="{
-              'text-white/80': !todo.completed,
-              'text-white/50': todo.completed
-            }"
-            title="Click to edit"
-          >
-            {{ todo.description }}
-          </p>
-          <textarea
-            v-else-if="editingField.description"
-            ref="descriptionInput"
-            v-model="editValues.description"
-            @blur="saveField('description')"
-            @keydown.escape="cancelEdit('description')"
-            rows="2"
-            class="mt-1 text-sm bg-white/20 border-white/30 text-white placeholder-white/60 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 rounded px-2 py-1 w-full resize-none"
-          ></textarea>
-          <p 
-            v-else-if="!todo.description && !editingField.description"
-            @click="startEditingField('description')"
-            class="mt-1 text-sm cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors text-white/50 italic"
-            title="Click to add description"
-          >
-            Click to add description...
+          <p class="text-xs text-white/50 px-2 mt-1">
+            Created {{ timeAgo }}
           </p>
         </div>
-
-        <!-- Metadata -->
-        <div class="flex flex-wrap items-center gap-3 text-sm text-white/70">
-          <!-- Priority Badge -->
-          <span 
-            v-if="!editingField.priority"
-            @click="startEditingField('priority')"
-            class="badge cursor-pointer hover:bg-white/10 transition-colors"
-            :class="priorityBadgeClass"
-            title="Click to edit priority"
-          >
-            {{ priorityText }}
-          </span>
-          <div v-else class="relative inline-block">
-            <CustomDropdown
-              ref="priorityDropdown"
-              v-model="editValues.priority"
-              :options="priorityOptions"
-              placeholder="Select priority"
-              @update:model-value="onPriorityChange"
-              @close="onPriorityDropdownClose"
-            />
-          </div>
-
-          <!-- Due Date -->
-          <span 
-            v-if="todo.due_date && !editingField.due_date"
-            @click="startEditingField('due_date')"
-            class="flex items-center cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
-            :class="dueDateClass"
-            title="Click to edit due date"
-          >
-            <CalendarIcon class="h-4 w-4 mr-1" />
-            {{ formatDueDate(todo.due_date) }}
-          </span>
-          <span 
-            v-else-if="!todo.due_date && !editingField.due_date"
-            @click="startEditingField('due_date')"
-            class="flex items-center cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors text-white/50 italic"
-            title="Click to add due date"
-          >
-            <CalendarIcon class="h-4 w-4 mr-1" />
-            Click to add due date...
-          </span>
-          <input
-            v-else
-            ref="dueDateInput"
-            v-model="editValues.due_date"
-            @blur="saveField('due_date')"
-            @keydown.enter="saveField('due_date')"
-            @keydown.escape="cancelEdit('due_date')"
-            type="datetime-local"
-            class="text-sm bg-white/20 border-white/30 text-white shadow-sm focus:border-indigo-400 focus:ring-indigo-400 rounded px-2 py-1"
-          />
-
-          <!-- Created Time -->
-          <span class="flex items-center text-white/60">
-            <ClockIcon class="h-4 w-4 mr-1" />
-            Created {{ formatCreatedTime(todo.created_at) }}
-          </span>
-        </div>
+        <input
+          v-else
+          ref="titleInput"
+          v-model="editValues.title"
+          @blur="saveField('title')"
+          @keydown.enter="saveField('title')"
+          @keydown.escape="cancelEdit('title')"
+          class="text-base font-medium bg-white/20 border-white/30 text-white placeholder-white/60 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 rounded px-2 py-1 w-full"
+          :class="{
+            'line-through': todo.completed
+          }"
+        />
       </div>
 
       <!-- Actions -->
-      <div class="flex-shrink-0">
-        <div class="flex items-center space-x-2">
-          <!-- Delete Button -->
-          <button
-            @click="deleteTodo"
-            :disabled="loading"
-            class="p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
-            title="Delete todo"
-          >
-            <TrashIcon class="h-5 w-5" />
-          </button>
-        </div>
+      <div class="flex items-center space-x-2">
+        <button
+          @click.stop="startEditingField('title')"
+          :disabled="loading"
+          class="p-2 text-white/60 hover:text-blue-400 transition-colors duration-200 disabled:opacity-50"
+          title="Edit todo"
+        >
+          <PencilIcon class="h-5 w-5" />
+        </button>
+        
+        <button
+          @click.stop="deleteTodo"
+          :disabled="loading"
+          class="p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
+          title="Delete todo"
+        >
+          <TrashIcon class="h-5 w-5" />
+        </button>
       </div>
     </div>
 
@@ -172,193 +87,90 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { useTodoStore } from '@/stores/todos'
 import type { Todo, UpdateTodoData } from '@/types'
-import { 
-  CheckIcon, 
-  CalendarIcon, 
-  ClockIcon, 
-  ArrowPathIcon,
-  TrashIcon
-} from '@heroicons/vue/24/outline'
-import { formatDistanceToNow, format } from 'date-fns'
+import { CheckIcon, TrashIcon, PencilIcon } from '@heroicons/vue/24/outline'
 import DeleteConfirmModal from './DeleteConfirmModal.vue'
-import CustomDropdown from './CustomDropdown.vue'
 
 const props = defineProps<{
   todo: Todo
+  isSelected?: boolean
 }>()
 
 const emit = defineEmits<{
   updated: [todo: Todo]
   deleted: [id: number]
+  selected: [id: number, selected: boolean]
 }>()
 
 const todoStore = useTodoStore()
 const loading = ref(false)
 const showDeleteModal = ref(false)
+const currentTime = ref(Date.now())
+let timeUpdateInterval: number | null = null
 
 // Inline editing state
 const editingField = ref({
-  title: false,
-  description: false,
-  priority: false,
-  due_date: false
+  title: false
 })
 
 const editValues = ref({
-  title: '',
-  description: '',
-  priority: 'medium' as 'low' | 'medium' | 'high',
-  due_date: ''
+  title: ''
 })
 
 // Template refs for focusing inputs
 const titleInput = ref<HTMLInputElement>()
-const descriptionInput = ref<HTMLTextAreaElement>()
-const dueDateInput = ref<HTMLInputElement>()
-const priorityDropdown = ref<InstanceType<typeof CustomDropdown>>()
 
-// Priority badge styling
-const priorityBadgeClass = computed(() => {
-  const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border'
-  switch (props.todo.priority) {
-    case 'high':
-      return `${baseClasses} bg-red-500/20 text-red-200 border-red-500/30`
-    case 'medium':
-      return `${baseClasses} bg-yellow-500/20 text-yellow-200 border-yellow-500/30`
-    case 'low':
-      return `${baseClasses} bg-green-500/20 text-green-200 border-green-500/30`
-    default:
-      return `${baseClasses} bg-gray-500/20 text-gray-200 border-gray-500/30`
-  }
-})
+function toggleSelection() {
+  emit('selected', props.todo.id, !props.isSelected)
+}
 
-const priorityText = computed(() => {
-  switch (props.todo.priority) {
-    case 'high': return 'High Priority'
-    case 'medium': return 'Medium Priority'
-    case 'low': return 'Low Priority'
-    default: return 'Unknown Priority'
-  }
-})
-
-// Priority dropdown options
-const priorityOptions = [
-  { value: 'high', label: 'High Priority', icon: '🔴' },
-  { value: 'medium', label: 'Medium Priority', icon: '🟡' },
-  { value: 'low', label: 'Low Priority', icon: '🟢' }
-]
-
-const dueDateClass = computed(() => {
-  if (!props.todo.due_date) return ''
+const timeAgo = computed(() => {
+  const createdAt = new Date(props.todo.created_at)
+  const now = currentTime.value
+  const diffMs = now - createdAt.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
   
-  const dueDate = new Date(props.todo.due_date)
-  const now = new Date()
-  const isOverdue = dueDate < now && !props.todo.completed
-  
-  return isOverdue ? 'text-red-400' : ''
-})
-
-function formatDueDate(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  
-  if (date.toDateString() === now.toDateString()) {
-    return `Today at ${format(date, 'h:mm a')}`
-  } else if (date.toDateString() === new Date(now.getTime() + 24 * 60 * 60 * 1000).toDateString()) {
-    return `Tomorrow at ${format(date, 'h:mm a')}`
+  if (diffMins < 1) {
+    return 'just now'
+  } else if (diffMins < 60) {
+    const roundedMins = Math.floor(diffMins / 5) * 5
+    return roundedMins === 0 ? 'just now' : `${roundedMins} min${roundedMins === 1 ? '' : 's'} ago`
+  } else if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`
   } else {
-    return format(date, 'MMM d, yyyy \'at\' h:mm a')
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`
   }
-}
+})
 
-function formatRelativeDate(dateString: string): string {
-  return formatDistanceToNow(new Date(dateString), { addSuffix: true })
-}
+onMounted(() => {
+  // Update time every minute
+  timeUpdateInterval = window.setInterval(() => {
+    currentTime.value = Date.now()
+  }, 60000)
+})
 
-function formatCreatedTime(dateString: string): string {
-  const createdDate = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - createdDate.getTime()
-  
-  // Convert to minutes
-  const diffMinutes = Math.floor(diffMs / (1000 * 60))
-  
-  if (diffMinutes < 60) {
-    // Under 1 hour: round to nearest 5-minute increment
-    const roundedMinutes = Math.max(5, Math.ceil(diffMinutes / 5) * 5)
-    return `~${roundedMinutes} mins ago`
+onUnmounted(() => {
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval)
   }
-  
-  // Convert to hours
-  const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
-  
-  if (diffHours < 24) {
-    // Under 24 hours: show hours
-    return `~${diffHours} hour${diffHours === 1 ? '' : 's'} ago`
-  }
-  
-  // 24+ hours: show days
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  return `~${diffDays} day${diffDays === 1 ? '' : 's'} ago`
-}
-
-function onPriorityChange(newPriority: string) {
-  editValues.value.priority = newPriority as 'low' | 'medium' | 'high'
-  saveField('priority')
-}
-
-function onPriorityDropdownClose() {
-  // If the dropdown closes without making a change, cancel the edit
-  if (editValues.value.priority === props.todo.priority) {
-    cancelEdit('priority')
-  }
-}
+})
 
 async function startEditingField(field: keyof typeof editingField.value) {
-  // Set the edit value to current value
-  switch (field) {
-    case 'title':
-      editValues.value.title = props.todo.title
-      break
-    case 'description':
-      editValues.value.description = props.todo.description || ''
-      break
-    case 'priority':
-      editValues.value.priority = props.todo.priority
-      break
-    case 'due_date':
-      if (props.todo.due_date) {
-        const date = new Date(props.todo.due_date)
-        date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
-        editValues.value.due_date = date.toISOString().slice(0, 16)
-      } else {
-        editValues.value.due_date = ''
-      }
-      break
+  if (field === 'title') {
+    editValues.value.title = props.todo.title
   }
   
   editingField.value[field] = true
   
   // Focus the input after it's rendered
   await nextTick()
-  switch (field) {
-    case 'title':
-      titleInput.value?.focus()
-      titleInput.value?.select()
-      break
-    case 'description':
-      descriptionInput.value?.focus()
-      break
-    case 'priority':
-      // Automatically open the dropdown
-      priorityDropdown.value?.openDropdown()
-      break
-    case 'due_date':
-      dueDateInput.value?.focus()
-      break
+  if (field === 'title') {
+    titleInput.value?.focus()
+    titleInput.value?.select()
   }
 }
 
@@ -372,33 +184,11 @@ async function saveField(field: keyof typeof editingField.value) {
   let updateData: UpdateTodoData = {}
   let hasChanges = false
   
-  switch (field) {
-    case 'title':
-      if (editValues.value.title.trim() && editValues.value.title !== props.todo.title) {
-        updateData.title = editValues.value.title.trim()
-        hasChanges = true
-      }
-      break
-    case 'description':
-      if (editValues.value.description !== (props.todo.description || '')) {
-        updateData.description = editValues.value.description || undefined
-        hasChanges = true
-      }
-      break
-    case 'priority':
-      if (editValues.value.priority !== props.todo.priority) {
-        updateData.priority = editValues.value.priority
-        hasChanges = true
-      }
-      break
-    case 'due_date':
-      const newDueDate = editValues.value.due_date ? new Date(editValues.value.due_date).toISOString() : undefined
-      const currentDueDate = props.todo.due_date
-      if (newDueDate !== currentDueDate) {
-        updateData.due_date = newDueDate
-        hasChanges = true
-      }
-      break
+  if (field === 'title') {
+    if (editValues.value.title.trim() && editValues.value.title !== props.todo.title) {
+      updateData.title = editValues.value.title.trim()
+      hasChanges = true
+    }
   }
   
   editingField.value[field] = false

@@ -1,17 +1,18 @@
 # Todo Application
 
-A modern, sleek todo application built with Vue.js frontend and Flask backend, using PostgreSQL database. Features a professional UI/UX design with comprehensive task management capabilities.
+A minimal, elegant todo application built with Vue.js frontend and Flask backend, using PostgreSQL database. Inspired by TodoMVC with modern styling and enhanced user experience.
 
 ## ✨ Features
 
-- **Modern UI/UX**: Clean, professional design with smooth animations
-- **Full CRUD Operations**: Create, read, update, and delete todos
-- **Priority Management**: Set and filter by priority levels (Low, Medium, High)
-- **Due Date Support**: Set due dates with visual indicators for overdue tasks
-- **Real-time Filtering**: Filter by completion status and priority
-- **Bulk Operations**: Mark all complete or clear completed tasks
-- **Responsive Design**: Works perfectly on desktop and mobile devices
-- **Professional Dashboard**: Statistics and quick actions overview
+- **Minimal TodoMVC Design**: Clean, focused interface for distraction-free task management
+- **Click-to-Select**: Interactive todo selection with visual highlighting
+- **Bulk Actions Modal**: Floating action panel for managing multiple todos at once
+- **Smart Filtering**: Filter by All, Active, or Completed todos with automatic sorting
+- **Auto-Focus Input**: Continuous todo creation without manual clicking
+- **Time Tracking**: "Created X time ago" display with smart time formatting
+- **Rounded Checkboxes**: Modern circular completion indicators
+- **Optimized Performance**: No unnecessary API calls, instant UI updates
+- **Confirmation Dialogs**: Safe bulk operations with user confirmation
 
 ## 🚀 Tech Stack
 
@@ -126,41 +127,48 @@ docker run --name todo-postgres -e POSTGRES_DB=todo_app -e POSTGRES_PASSWORD=pas
 ## 🌐 API Endpoints
 
 ### Todos
-- `GET /api/todos` - Get all todos (with filtering)
-- `POST /api/todos` - Create a new todo
+- `GET /api/todos` - Get all todos (with optional completion filtering)
+- `POST /api/todos` - Create a new todo (requires: title)
 - `GET /api/todos/{id}` - Get specific todo
-- `PUT /api/todos/{id}` - Update todo
+- `PUT /api/todos/{id}` - Update todo (title, completed status)
 - `DELETE /api/todos/{id}` - Delete todo
-- `PUT /api/todos/bulk` - Bulk update todos
+- `PUT /api/todos/bulk` - Bulk update multiple todos
 
 ### Health Check
-- `GET /api/health` - API health status
+- `GET /` - API information and health status
+- `GET /api/health` - Detailed health check endpoint
 
-## 🎨 Features Showcase
+## 🎨 User Experience
 
-### Dashboard Overview
-- Task statistics (total, pending, completed, completion percentage)
-- Quick action buttons for bulk operations
-- Clean, card-based layout
+### Streamlined Todo Creation
+- Single input field with "What needs to be done?" prompt
+- Auto-focus returns to input after creation for continuous adding
+- Instant todo addition without page reload
 
-### Task Management
-- Create tasks with title, description, priority, and due date
-- Edit tasks inline with a professional form interface
-- Mark tasks as complete/incomplete with smooth animations
-- Delete tasks with confirmation
+### Interactive Selection System
+- Click any todo item to select it (blue highlight with ring)
+- Multiple selection support for batch operations
+- Visual feedback with immediate color changes
 
-### Filtering & Organization
-- Filter by completion status (All, Pending, Completed)
-- Filter by priority level (High, Medium, Low)
-- Visual priority indicators with color-coded badges
-- Due date indicators with overdue warnings
+### Floating Bulk Actions Modal
+- Appears on the right when todos are selected
+- **Select All/Deselect All**: Toggle selection of all visible todos
+- **Mark as Completed**: Bulk complete selected todos with green confirmation
+- **Mark as Incomplete**: Bulk mark as incomplete with yellow confirmation  
+- **Delete Selected**: Bulk delete with red warning confirmation
+- **Clear Selection**: Remove all selections instantly
 
-### Professional UI/UX
-- Smooth hover animations and transitions
-- Professional color scheme with accessibility in mind
-- Responsive design for all screen sizes
-- Loading states and error handling
-- Toast notifications for user feedback
+### Smart Todo Management
+- **Rounded Checkboxes**: Modern circular completion indicators
+- **Inline Editing**: Click pencil icon to edit todo titles
+- **Time Display**: Shows "Created X time ago" with smart formatting (5min increments → hours → days)
+- **Auto-Sorting**: Completed todos automatically move to bottom of list
+- **Filter Buttons**: All, Active, Completed with center alignment
+
+### Performance Optimized
+- No full page reloads on todo updates
+- Optimistic UI updates for instant feedback
+- Efficient API calls only when necessary
 
 ## 🚀 Development
 
@@ -237,13 +245,13 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🎯 Roadmap
 
 - [ ] User authentication and authorization
-- [ ] Task sharing and collaboration
-- [ ] Email notifications for due dates
+- [ ] Task sharing and collaboration  
 - [ ] Dark mode toggle
 - [ ] Task categories and tags
-- [ ] File attachments
 - [ ] Search functionality
 - [ ] Export tasks to various formats
+- [ ] Keyboard shortcuts for power users
+- [ ] Drag and drop reordering
 
 ---
 

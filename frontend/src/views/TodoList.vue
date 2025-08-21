@@ -5,70 +5,41 @@
       <TodoCreateForm @todo-created="handleTodoCreated" />
     </div>
 
-    <!-- Filters & Sort -->
-    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6 mb-6 border border-white/20">
-      <div class="mb-3">
-        <h3 class="text-sm font-medium text-white/90 flex items-center">
-          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 2v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-          </svg>
-          Filter & Sort Options
-        </h3>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <!-- Status Filter -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            📋 Status
-          </label>
-          <CustomDropdown
-            v-model="filters.completed"
-            :options="statusOptions"
-            placeholder="All Todos"
-            @update:model-value="loadTodos"
-          />
-        </div>
-
-        <!-- Priority Filter -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            ⚡ Priority
-          </label>
-          <CustomDropdown
-            v-model="filters.priority"
-            :options="priorityOptions"
-            placeholder="All Priorities"
-            @update:model-value="loadTodos"
-          />
-        </div>
-
-        <!-- Sort Options -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            🔄 Sort By
-          </label>
-          <CustomDropdown
-            v-model="sortBy"
-            :options="sortOptions"
-            placeholder="Sort By"
-            @update:model-value="applySorting"
-          />
-        </div>
-
-        <!-- Actions -->
-        <div class="space-y-2">
-          <label class="block text-xs font-medium text-white/70 uppercase tracking-wide">
-            🧹 Actions
-          </label>
-          <button
-            @click="clearFilters"
-            class="w-full px-4 py-2 text-sm font-medium text-white/90 bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-400/30 rounded-lg hover:from-red-500/30 hover:to-pink-500/30 hover:border-red-400/50 focus:outline-none focus:ring-2 focus:ring-red-400/50 transition-all duration-200 shadow-lg"
-          >
-            ✨ Clear All
-          </button>
-        </div>
-      </div>
+    <!-- Filters -->
+    <div class="flex flex-wrap justify-center gap-2 mb-6 relative">
+      <button
+        @click="setFilter('all')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'all' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        All
+      </button>
+      <button
+        @click="setFilter('active')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'active' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        Active
+      </button>
+      <button
+        @click="setFilter('completed')"
+        :class="[
+          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          currentFilter === 'completed' 
+            ? 'bg-white/20 text-white border border-white/30' 
+            : 'text-white/70 hover:text-white hover:bg-white/10'
+        ]"
+      >
+        Completed
+      </button>
     </div>
 
     <!-- Todo List -->
@@ -83,25 +54,114 @@
         <p class="text-white/70 text-sm mt-2">Create your first todo above!</p>
       </div>
       
-      <div v-else>
-        <TodoItem
-          v-for="todo in todos"
-          :key="todo.id"
-          :todo="todo"
-          @todo-updated="handleTodoUpdated"
-          @todo-deleted="handleTodoDeleted"
-        />
+      <div v-else class="relative">
+        <div class="space-y-6">
+          <TodoItem
+            v-for="todo in todos"
+            :key="todo.id"
+            :todo="todo"
+            :is-selected="selectedTodos.has(todo.id)"
+            @updated="handleTodoUpdated"
+            @deleted="handleTodoDeleted"
+            @selected="handleTodoSelected"
+          />
+        </div>
+        
+        <!-- Selection Actions Modal -->
+        <div 
+          v-if="selectedTodos.size > 0"
+          class="absolute top-0 -right-80 bg-white/10 backdrop-blur-md rounded-lg shadow-xl border border-white/20 w-72 h-fit"
+        >
+          <div class="p-5">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/20">
+              <h3 class="text-base font-semibold text-white">Actions</h3>
+              <button
+                @click="toggleSelectAll"
+                class="px-3 py-2 text-xs font-medium bg-indigo-600/30 text-indigo-200 hover:bg-indigo-600/40 hover:text-white rounded-lg border border-indigo-500/50 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+              >
+                {{ isAllSelected ? 'Deselect All' : 'Select All' }}
+              </button>
+              <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white/80 rounded-full border border-white/30">{{ selectedTodos.size }} selected</span>
+            </div>
+            
+            <div class="space-y-3">
+              
+              <button
+                @click="showMarkCompletedConfirm = true"
+                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-green-600/20 text-green-300 hover:bg-green-600/30 hover:text-white border border-green-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Mark as Completed
+              </button>
+              
+              <button
+                @click="showMarkIncompleteConfirm = true"
+                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30 hover:text-white border border-yellow-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Mark as Incomplete
+              </button>
+              
+              <button
+                @click="showDeleteConfirm = true"
+                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-red-600/20 text-red-300 hover:bg-red-600/30 hover:text-white border border-red-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                Delete Selected
+              </button>
+              
+              <button
+                @click="clearSelection"
+                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-white/20 text-white/70 hover:bg-white/30 hover:text-white border border-white/30 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Clear Selection
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Stats -->
-    <div v-if="todos.length > 0" class="mt-8 bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-4 border border-white/20">
-      <div class="flex justify-between items-center text-sm text-white/80">
-        <span>Total: {{ todos.length }}</span>
-        <span>Completed: {{ completedCount }}</span>
-        <span>Active: {{ activeCount }}</span>
-      </div>
-    </div>
+    <!-- Confirmation Modals -->
+    <ConfirmModal
+      :is-open="showMarkCompletedConfirm"
+      title="Mark as Completed"
+      :message="`Are you sure you want to mark ${selectedTodos.size} item${selectedTodos.size === 1 ? '' : 's'} as completed?`"
+      confirm-text="Mark Completed"
+      type="success"
+      @confirm="confirmMarkCompleted"
+      @cancel="showMarkCompletedConfirm = false"
+    />
+    
+    <ConfirmModal
+      :is-open="showMarkIncompleteConfirm"
+      title="Mark as Incomplete"
+      :message="`Are you sure you want to mark ${selectedTodos.size} item${selectedTodos.size === 1 ? '' : 's'} as incomplete?`"
+      confirm-text="Mark Incomplete"
+      type="warning"
+      @confirm="confirmMarkIncomplete"
+      @cancel="showMarkIncompleteConfirm = false"
+    />
+    
+    <ConfirmModal
+      :is-open="showDeleteConfirm"
+      title="Delete Items"
+      :message="`Are you sure you want to delete ${selectedTodos.size} selected item${selectedTodos.size === 1 ? '' : 's'}? This action cannot be undone.`"
+      confirm-text="Delete"
+      type="danger"
+      @confirm="confirmDeleteSelected"
+      @cancel="showDeleteConfirm = false"
+    />
+
   </div>
 </template>
 
@@ -110,98 +170,67 @@ import { ref, computed, onMounted } from 'vue'
 import { useTodoStore } from '../stores/todos'
 import TodoCreateForm from '../components/TodoCreateForm.vue'
 import TodoItem from '../components/TodoItem.vue'
-import CustomDropdown from '../components/CustomDropdown.vue'
-import type { Todo, TodoFilters } from '../types'
+import ConfirmModal from '../components/ConfirmModal.vue'
 
 const todoStore = useTodoStore()
 
 const loading = ref(false)
-const filters = ref({
-  completed: '',
-  priority: ''
-})
-const sortBy = ref('created_desc')
+const currentFilter = ref<'all' | 'active' | 'completed'>('all')
+const selectedTodos = ref<Set<number>>(new Set())
+const showMarkCompletedConfirm = ref(false)
+const showMarkIncompleteConfirm = ref(false)
+const showDeleteConfirm = ref(false)
 
-// Dropdown options
-const statusOptions = [
-  { value: '', label: 'All Todos', icon: '📋' },
-  { value: 'false', label: 'Active', icon: '📝' },
-  { value: 'true', label: 'Completed', icon: '✅' }
-]
-
-const priorityOptions = [
-  { value: '', label: 'All Priorities', icon: '⚡' },
-  { value: 'high', label: 'High', icon: '🔴' },
-  { value: 'medium', label: 'Medium', icon: '🟡' },
-  { value: 'low', label: 'Low', icon: '🟢' }
-]
-
-const sortOptions = [
-  { value: 'created_desc', label: 'Most Recent', icon: '🆕' },
-  { value: 'created_asc', label: 'Oldest First', icon: '📅' },
-  { value: 'priority', label: 'Priority', icon: '⚡' },
-  { value: 'due_date', label: 'Due Date', icon: '⏰' },
-  { value: 'title', label: 'Title (A-Z)', icon: '🔤' }
-]
-
-const sortedTodos = computed(() => {
-  const todoList = [...todoStore.todos]
+// Filter and sort todos - completed items go to bottom
+const todos = computed(() => {
+  let filteredTodos = [...todoStore.todos]
   
-  switch (sortBy.value) {
-    case 'created_desc':
-      return todoList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    
-    case 'created_asc':
-      return todoList.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-    
-    case 'priority':
-      const priorityOrder = { high: 3, medium: 2, low: 1 }
-      return todoList.sort((a, b) => {
-        const aPriority = priorityOrder[a.priority] || 0
-        const bPriority = priorityOrder[b.priority] || 0
-        return bPriority - aPriority
-      })
-    
-    case 'due_date':
-      return todoList.sort((a, b) => {
-        // Handle todos without due dates (put them at the end)
-        if (!a.due_date && !b.due_date) return 0
-        if (!a.due_date) return 1
-        if (!b.due_date) return -1
-        
-        return new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
-      })
-    
-    case 'title':
-      return todoList.sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()))
-    
-    default:
-      return todoList
-  }
-})
-
-const todos = computed(() => sortedTodos.value)
-const completedCount = computed(() => todos.value.filter(todo => todo.completed).length)
-const activeCount = computed(() => todos.value.filter(todo => !todo.completed).length)
-
-const apiFilters = computed(() => {
-  const result: TodoFilters = {}
-  
-  if (filters.value.completed !== '') {
-    result.completed = filters.value.completed === 'true'
+  // Apply filter
+  switch (currentFilter.value) {
+    case 'active':
+      filteredTodos = filteredTodos.filter(todo => !todo.completed)
+      break
+    case 'completed':
+      filteredTodos = filteredTodos.filter(todo => todo.completed)
+      break
+    // 'all' shows everything, no filter needed
   }
   
-  if (filters.value.priority !== '') {
-    result.priority = filters.value.priority as 'low' | 'medium' | 'high'
-  }
-  
-  return result
+  // Sort: active todos first, then completed todos, both by creation date (newest first)
+  return filteredTodos.sort((a, b) => {
+    // First sort by completion status (active first)
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1
+    }
+    // Then by creation date (newest first)
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  })
 })
+
+const completedCount = computed(() => todoStore.todos.filter(todo => todo.completed).length)
+
+const setFilter = (filter: 'all' | 'active' | 'completed') => {
+  currentFilter.value = filter
+}
+
+const clearCompleted = async () => {
+  loading.value = true
+  try {
+    const completedTodos = todoStore.todos.filter(todo => todo.completed)
+    for (const todo of completedTodos) {
+      await todoStore.deleteTodo(todo.id)
+    }
+  } catch (error) {
+    console.error('Error clearing completed todos:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
 const loadTodos = async () => {
   loading.value = true
   try {
-    await todoStore.fetchTodos(apiFilters.value)
+    await todoStore.fetchTodos()
   } catch (error) {
     console.error('Error loading todos:', error)
   } finally {
@@ -209,29 +238,105 @@ const loadTodos = async () => {
   }
 }
 
-const applySorting = () => {
-  // Sorting is handled by the computed property, no need to reload todos
+const handleTodoCreated = () => {
+  // Store already handles adding the new todo
 }
 
-const clearFilters = () => {
-  filters.value = {
-    completed: '',
-    priority: ''
+const handleTodoUpdated = () => {
+  // Store already handles updating the todo
+}
+
+const handleTodoDeleted = () => {
+  // Store already handles removing the todo
+}
+
+const handleTodoSelected = (todoId: number, selected: boolean) => {
+  if (selected) {
+    selectedTodos.value.add(todoId)
+  } else {
+    selectedTodos.value.delete(todoId)
   }
-  sortBy.value = 'created_desc'
-  loadTodos()
 }
 
-const handleTodoCreated = (todo: Todo) => {
-  loadTodos()
+const markSelectedAsCompleted = async () => {
+  if (selectedTodos.value.size === 0) return
+  
+  loading.value = true
+  try {
+    for (const todoId of selectedTodos.value) {
+      await todoStore.updateTodo(todoId, { completed: true })
+    }
+    selectedTodos.value.clear()
+  } catch (error) {
+    console.error('Error marking selected as completed:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-const handleTodoUpdated = (todo: Todo) => {
-  loadTodos()
+const deleteSelected = async () => {
+  if (selectedTodos.value.size === 0) return
+  
+  loading.value = true
+  try {
+    for (const todoId of selectedTodos.value) {
+      await todoStore.deleteTodo(todoId)
+    }
+    selectedTodos.value.clear()
+  } catch (error) {
+    console.error('Error deleting selected todos:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-const handleTodoDeleted = (todoId: number) => {
-  loadTodos()
+const clearSelection = () => {
+  selectedTodos.value.clear()
+}
+
+const confirmMarkCompleted = async () => {
+  showMarkCompletedConfirm.value = false
+  await markSelectedAsCompleted()
+}
+
+const confirmDeleteSelected = async () => {
+  showDeleteConfirm.value = false
+  await deleteSelected()
+}
+
+const markSelectedAsIncomplete = async () => {
+  if (selectedTodos.value.size === 0) return
+  
+  loading.value = true
+  try {
+    for (const todoId of selectedTodos.value) {
+      await todoStore.updateTodo(todoId, { completed: false })
+    }
+    selectedTodos.value.clear()
+  } catch (error) {
+    console.error('Error marking selected as incomplete:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const confirmMarkIncomplete = async () => {
+  showMarkIncompleteConfirm.value = false
+  await markSelectedAsIncomplete()
+}
+
+const isAllSelected = computed(() => {
+  return todos.value.length > 0 && selectedTodos.value.size === todos.value.length
+})
+
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    selectedTodos.value.clear()
+  } else {
+    for (const todo of todos.value) {
+      selectedTodos.value.add(todo.id)
+    }
+  }
 }
 
 onMounted(() => {

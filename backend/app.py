@@ -28,16 +28,12 @@ def create_app(config_class=Config):
         try:
             # Query parameters for filtering
             completed = request.args.get('completed')
-            priority = request.args.get('priority')
             
             query = Todo.query
             
             if completed is not None:
                 completed_bool = completed.lower() in ['true', '1', 'yes']
                 query = query.filter(Todo.completed == completed_bool)
-            
-            if priority:
-                query = query.filter(Todo.priority == priority)
             
             # Order by creation date (newest first)
             todos = query.order_by(Todo.created_at.desc()).all()
@@ -55,20 +51,9 @@ def create_app(config_class=Config):
             if not data or not data.get('title'):
                 return jsonify({'error': 'Title is required'}), 400
             
-            # Parse due_date if provided
-            due_date = None
-            if data.get('due_date'):
-                try:
-                    due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
-                except ValueError:
-                    return jsonify({'error': 'Invalid due_date format. Use ISO format.'}), 400
-            
             # Create new todo
             todo = Todo(
-                title=data['title'],
-                description=data.get('description', ''),
-                priority=data.get('priority', 'medium'),
-                due_date=due_date
+                title=data['title']
             )
             
             db.session.add(todo)
@@ -101,20 +86,8 @@ def create_app(config_class=Config):
             # Update fields if provided
             if 'title' in data:
                 todo.title = data['title']
-            if 'description' in data:
-                todo.description = data['description']
             if 'completed' in data:
                 todo.completed = data['completed']
-            if 'priority' in data:
-                todo.priority = data['priority']
-            if 'due_date' in data:
-                if data['due_date']:
-                    try:
-                        todo.due_date = datetime.fromisoformat(data['due_date'].replace('Z', '+00:00'))
-                    except ValueError:
-                        return jsonify({'error': 'Invalid due_date format. Use ISO format.'}), 400
-                else:
-                    todo.due_date = None
             
             todo.updated_at = datetime.utcnow()
             db.session.commit()
@@ -153,8 +126,6 @@ def create_app(config_class=Config):
             for todo in todos:
                 if 'completed' in updates:
                     todo.completed = updates['completed']
-                if 'priority' in updates:
-                    todo.priority = updates['priority']
                 todo.updated_at = datetime.utcnow()
             
             db.session.commit()
