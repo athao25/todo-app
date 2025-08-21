@@ -1,11 +1,18 @@
 <template>
-  <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-4 border border-white/20 hover:bg-white/15 transition-colors duration-200">
+  <div 
+    @click="toggleSelection"
+    class="backdrop-blur-md rounded-lg shadow-xl p-4 border transition-colors duration-200 cursor-pointer"
+    :class="{
+      'bg-indigo-600/20 border-indigo-400 ring-2 ring-indigo-400': props.isSelected,
+      'bg-white/10 border-white/20 hover:bg-white/15': !props.isSelected
+    }"
+  >
     <div class="flex items-center space-x-3">
       <!-- Checkbox -->
       <button
-        @click="toggleCompleted"
+        @click.stop="toggleCompleted"
         :disabled="loading"
-        class="relative inline-flex h-5 w-5 items-center justify-center rounded border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        class="relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         :class="{
           'bg-indigo-600 border-indigo-600': todo.completed,
           'hover:bg-white/30': !todo.completed
@@ -19,18 +26,20 @@
 
       <!-- Title -->
       <div class="flex-1 min-w-0">
-        <h4 
-          v-if="!editingField.title"
-          @click="startEditingField('title')"
-          class="text-base font-medium cursor-pointer hover:bg-white/10 px-2 py-1 rounded transition-colors"
-          :class="{
-            'text-white': !todo.completed,
-            'text-white/60 line-through': todo.completed
-          }"
-          title="Click to edit"
-        >
-          {{ todo.title }}
-        </h4>
+        <div v-if="!editingField.title">
+          <h4 
+            class="text-base font-medium px-2 py-1 rounded"
+            :class="{
+              'text-white': !todo.completed,
+              'text-white/60 line-through': todo.completed
+            }"
+          >
+            {{ todo.title }}
+          </h4>
+          <p class="text-xs text-white/50 px-2 mt-1">
+            Created {{ timeAgo }}
+          </p>
+        </div>
         <input
           v-else
           ref="titleInput"
@@ -46,14 +55,25 @@
       </div>
 
       <!-- Actions -->
-      <button
-        @click="deleteTodo"
-        :disabled="loading"
-        class="p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
-        title="Delete todo"
-      >
-        <TrashIcon class="h-5 w-5" />
-      </button>
+      <div class="flex items-center space-x-2">
+        <button
+          @click.stop="startEditingField('title')"
+          :disabled="loading"
+          class="p-2 text-white/60 hover:text-blue-400 transition-colors duration-200 disabled:opacity-50"
+          title="Edit todo"
+        >
+          <PencilIcon class="h-5 w-5" />
+        </button>
+        
+        <button
+          @click.stop="deleteTodo"
+          :disabled="loading"
+          class="p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
+          title="Delete todo"
+        >
+          <TrashIcon class="h-5 w-5" />
+        </button>
+      </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -67,24 +87,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { useTodoStore } from '@/stores/todos'
 import type { Todo, UpdateTodoData } from '@/types'
-import { CheckIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { CheckIcon, TrashIcon, PencilIcon } from '@heroicons/vue/24/outline'
 import DeleteConfirmModal from './DeleteConfirmModal.vue'
 
 const props = defineProps<{
   todo: Todo
+  isSelected?: boolean
 }>()
 
 const emit = defineEmits<{
   updated: [todo: Todo]
   deleted: [id: number]
+  selected: [id: number, selected: boolean]
 }>()
 
 const todoStore = useTodoStore()
 const loading = ref(false)
 const showDeleteModal = ref(false)
+const currentTime = ref(Date.now())
+let timeUpdateInterval: number | null = null
 
 // Inline editing state
 const editingField = ref({
@@ -97,6 +121,43 @@ const editValues = ref({
 
 // Template refs for focusing inputs
 const titleInput = ref<HTMLInputElement>()
+
+function toggleSelection() {
+  emit('selected', props.todo.id, !props.isSelected)
+}
+
+const timeAgo = computed(() => {
+  const createdAt = new Date(props.todo.created_at)
+  const now = currentTime.value
+  const diffMs = now - createdAt.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMs / 3600000)
+  const diffDays = Math.floor(diffMs / 86400000)
+  
+  if (diffMins < 1) {
+    return 'just now'
+  } else if (diffMins < 60) {
+    const roundedMins = Math.floor(diffMins / 5) * 5
+    return roundedMins === 0 ? 'just now' : `${roundedMins} min${roundedMins === 1 ? '' : 's'} ago`
+  } else if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`
+  } else {
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`
+  }
+})
+
+onMounted(() => {
+  // Update time every minute
+  timeUpdateInterval = window.setInterval(() => {
+    currentTime.value = Date.now()
+  }, 60000)
+})
+
+onUnmounted(() => {
+  if (timeUpdateInterval) {
+    clearInterval(timeUpdateInterval)
+  }
+})
 
 async function startEditingField(field: keyof typeof editingField.value) {
   if (field === 'title') {

@@ -2,6 +2,7 @@
   <div>
     <form @submit.prevent="handleSubmit" class="flex gap-2">
       <input
+        ref="titleInput"
         v-model="form.title"
         type="text"
         class="flex-1 rounded-lg bg-white/20 border-white/30 text-white placeholder-white/60 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 sm:text-sm transition-colors duration-200"
@@ -21,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useTodoStore } from '@/stores/todos'
 import type { CreateTodoData } from '@/types'
 
@@ -31,6 +32,7 @@ const emit = defineEmits<{
 
 const todoStore = useTodoStore()
 const loading = ref(false)
+const titleInput = ref<HTMLInputElement>()
 
 // Form data
 const form = ref<CreateTodoData>({
@@ -53,6 +55,11 @@ async function handleSubmit() {
     }
 
     emit('created')
+    
+    // Focus back to input for continuous adding
+    setTimeout(() => {
+      titleInput.value?.focus()
+    }, 50)
   } catch (error) {
     console.error('Failed to create todo:', error)
   } finally {
