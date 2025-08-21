@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, readonly } from 'vue'
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 
 interface DropdownOption {
@@ -68,6 +68,7 @@ interface Props {
 
 interface Emits {
   'update:modelValue': [value: string]
+  'close': []
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -117,9 +118,27 @@ function selectOption(option: DropdownOption) {
   isOpen.value = false
 }
 
-function closeDropdown() {
-  isOpen.value = false
+function openDropdown() {
+  isOpen.value = true
+  nextTick(() => {
+    // Trigger reactivity
+  })
 }
+
+function closeDropdown() {
+  const wasOpen = isOpen.value
+  isOpen.value = false
+  if (wasOpen) {
+    emit('close')
+  }
+}
+
+// Expose methods for parent components
+defineExpose({
+  openDropdown,
+  closeDropdown,
+  isOpen: readonly(isOpen)
+})
 
 // Close dropdown when clicking outside
 function handleClickOutside(event: MouseEvent) {
