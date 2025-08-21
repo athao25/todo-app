@@ -95,19 +95,14 @@
           >
             {{ priorityText }}
           </span>
-          <select
-            v-else
-            ref="priorityInput"
-            v-model="editValues.priority"
-            @blur="saveField('priority')"
-            @change="saveField('priority')"
-            @keydown.escape="cancelEdit('priority')"
-            class="text-sm bg-white/20 border-white/30 text-white shadow-sm focus:border-indigo-400 focus:ring-indigo-400 rounded px-2 py-1"
-          >
-            <option value="low" class="text-gray-800">Low Priority</option>
-            <option value="medium" class="text-gray-800">Medium Priority</option>
-            <option value="high" class="text-gray-800">High Priority</option>
-          </select>
+          <div v-else class="relative inline-block">
+            <CustomDropdown
+              v-model="editValues.priority"
+              :options="priorityOptions"
+              placeholder="Select priority"
+              @update:model-value="onPriorityChange"
+            />
+          </div>
 
           <!-- Due Date -->
           <span 
@@ -187,6 +182,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { formatDistanceToNow, format } from 'date-fns'
 import DeleteConfirmModal from './DeleteConfirmModal.vue'
+import CustomDropdown from './CustomDropdown.vue'
 
 const props = defineProps<{
   todo: Todo
@@ -219,21 +215,20 @@ const editValues = ref({
 // Template refs for focusing inputs
 const titleInput = ref<HTMLInputElement>()
 const descriptionInput = ref<HTMLTextAreaElement>()
-const priorityInput = ref<HTMLSelectElement>()
 const dueDateInput = ref<HTMLInputElement>()
 
 // Priority badge styling
 const priorityBadgeClass = computed(() => {
-  const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
+  const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border'
   switch (props.todo.priority) {
     case 'high':
-      return `${baseClasses} bg-red-100 text-red-800`
+      return `${baseClasses} bg-red-500/20 text-red-200 border-red-500/30`
     case 'medium':
-      return `${baseClasses} bg-yellow-100 text-yellow-800`
+      return `${baseClasses} bg-yellow-500/20 text-yellow-200 border-yellow-500/30`
     case 'low':
-      return `${baseClasses} bg-green-100 text-green-800`
+      return `${baseClasses} bg-green-500/20 text-green-200 border-green-500/30`
     default:
-      return `${baseClasses} bg-gray-100 text-gray-800`
+      return `${baseClasses} bg-gray-500/20 text-gray-200 border-gray-500/30`
   }
 })
 
@@ -245,6 +240,13 @@ const priorityText = computed(() => {
     default: return 'Unknown Priority'
   }
 })
+
+// Priority dropdown options
+const priorityOptions = [
+  { value: 'high', label: 'High Priority', icon: '🔴' },
+  { value: 'medium', label: 'Medium Priority', icon: '🟡' },
+  { value: 'low', label: 'Low Priority', icon: '🟢' }
+]
 
 const dueDateClass = computed(() => {
   if (!props.todo.due_date) return ''
@@ -300,6 +302,11 @@ function formatCreatedTime(dateString: string): string {
   return `~${diffDays} day${diffDays === 1 ? '' : 's'} ago`
 }
 
+function onPriorityChange(newPriority: string) {
+  editValues.value.priority = newPriority as 'low' | 'medium' | 'high'
+  saveField('priority')
+}
+
 async function startEditingField(field: keyof typeof editingField.value) {
   // Set the edit value to current value
   switch (field) {
@@ -334,9 +341,6 @@ async function startEditingField(field: keyof typeof editingField.value) {
       break
     case 'description':
       descriptionInput.value?.focus()
-      break
-    case 'priority':
-      priorityInput.value?.focus()
       break
     case 'due_date':
       dueDateInput.value?.focus()
