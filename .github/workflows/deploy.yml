@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   test-frontend:
@@ -90,14 +91,63 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Validate Deploy Credentials
+      run: |
+        if [ -z "${{ secrets.RENDER_API_KEY }}" ]; then
+          echo "::error::RENDER_API_KEY secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.RENDER_BACKEND_SERVICE_ID }}" ]; then
+          echo "::error::RENDER_BACKEND_SERVICE_ID secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.RENDER_FRONTEND_SERVICE_ID }}" ]; then
+          echo "::error::RENDER_FRONTEND_SERVICE_ID secret is not set"
+          exit 1
+        fi
+        echo "✅ All required secrets are present"
+    
     - name: Deploy Backend to Render
+      id: deploy-backend
       uses: johnbeynon/render-deploy-action@v0.0.8
       with:
         service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
         api-key: ${{ secrets.RENDER_API_KEY }}
+      continue-on-error: true
+    
+    - name: Check Backend Deploy Status
+      run: |
+        if [ "${{ steps.deploy-backend.outcome }}" == "failure" ]; then
+          echo "::error::Backend deployment failed. Check Render dashboard for details."
+          echo "::error::Possible causes: Invalid API key, service ID not found, or deployment timeout"
+          exit 1
+        fi
+        echo "✅ Backend deployment completed successfully"
     
     - name: Deploy Frontend to Render
+      id: deploy-frontend
       uses: johnbeynon/render-deploy-action@v0.0.8
       with:
         service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
         api-key: ${{ secrets.RENDER_API_KEY }}
+      continue-on-error: true
+    
+    - name: Check Frontend Deploy Status
+      run: |
+        if [ "${{ steps.deploy-frontend.outcome }}" == "failure" ]; then
+          echo "::error::Frontend deployment failed. Check Render dashboard for details."
+          echo "::error::Possible causes: Invalid API key, service ID not found, or deployment timeout"
+          exit 1
+        fi
+        echo "✅ Frontend deployment completed successfully"
+    
+    - name: Deployment Summary
+      if: always()
+      run: |
+        echo "## Deployment Summary"
+        echo "Backend: ${{ steps.deploy-backend.outcome == 'success' && '✅ Success' || '❌ Failed' }}"
+        echo "Frontend: ${{ steps.deploy-frontend.outcome == 'success' && '✅ Success' || '❌ Failed' }}"
+        if [ "${{ steps.deploy-backend.outcome }}" == "failure" ] || [ "${{ steps.deploy-frontend.outcome }}" == "failure" ]; then
+          echo "::error::One or more deployments failed. Check the logs above for details."
+          exit 1
+        fi
