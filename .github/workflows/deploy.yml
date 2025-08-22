@@ -2,7 +2,7 @@ name: Build, Test, and Deploy to Render
 
 on:
   push:
-    branches: [ main, github-actions-render-deploy ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -85,7 +85,7 @@ jobs:
   deploy:
     needs: [test-frontend, test-backend]
     runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/github-actions-render-deploy') && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
     - uses: actions/checkout@v4
