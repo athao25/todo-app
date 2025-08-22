@@ -13,90 +13,54 @@ from models import db, Todo
 def create_test_data():
     """Create sample todos for testing"""
     
-    # Sample todos with various states and priorities
+    # Sample todos with various states
     test_todos = [
         {
             'title': 'Complete project proposal',
-            'description': 'Write and review the Q4 project proposal for the new client initiative',
-            'priority': 'high',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=2),
             'completed': False
         },
         {
             'title': 'Buy groceries',
-            'description': 'Milk, bread, eggs, vegetables, and fruits for the week',
-            'priority': 'medium',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=1),
             'completed': False
         },
         {
             'title': 'Call dentist appointment',
-            'description': 'Schedule routine cleaning and checkup for next month',
-            'priority': 'medium',
-            'due_date': None,
             'completed': False
         },
         {
             'title': 'Review code changes',
-            'description': 'Review pull requests from the development team and provide feedback',
-            'priority': 'high',
-            'due_date': datetime.now(timezone.utc) + timedelta(hours=4),
             'completed': False
         },
         {
             'title': 'Update website content',
-            'description': 'Update the about page and add new team member profiles',
-            'priority': 'low',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=7),
             'completed': False
         },
         {
             'title': 'Organize desk workspace',
-            'description': 'Clean and organize desk, file important documents',
-            'priority': 'low',
-            'due_date': None,
             'completed': True
         },
         {
             'title': 'Send birthday card',
-            'description': 'Send birthday card to mom - her birthday is next week',
-            'priority': 'medium',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=5),
             'completed': True
         },
         {
             'title': 'Learn new programming framework',
-            'description': 'Complete online course on Vue.js and build a small project',
-            'priority': 'low',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=14),
             'completed': False
         },
         {
             'title': 'Plan team meeting agenda',
-            'description': 'Prepare agenda items for next week\'s team standup meeting',
-            'priority': 'medium',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=3),
             'completed': False
         },
         {
             'title': 'Fix bug in login system',
-            'description': 'Investigate and fix the authentication timeout issue reported by users',
-            'priority': 'high',
-            'due_date': datetime.now(timezone.utc) + timedelta(hours=12),
             'completed': False
         },
         {
             'title': 'Water plants',
-            'description': 'Water all indoor plants and check for any that need repotting',
-            'priority': 'low',
-            'due_date': None,
             'completed': True
         },
         {
             'title': 'Backup important files',
-            'description': 'Create backup of all project files and personal documents to external drive',
-            'priority': 'medium',
-            'due_date': datetime.now(timezone.utc) + timedelta(days=1),
             'completed': False
         }
     ]
@@ -143,12 +107,7 @@ def setup_database():
                 
                 todo = Todo(
                     title=todo_data['title'],
-                    description=todo_data['description'],
-                    priority=todo_data['priority'],
-                    due_date=todo_data['due_date'],
-                    completed=todo_data['completed'],
-                    created_at=created_time,
-                    updated_at=created_time
+                    completed=todo_data['completed']
                 )
                 
                 db.session.add(todo)
@@ -165,9 +124,6 @@ def setup_database():
             print(f"   Total todos: {total_todos}")
             print(f"   Completed: {completed_todos}")
             print(f"   Pending: {pending_todos}")
-            print(f"   High priority: {Todo.query.filter_by(priority='high').count()}")
-            print(f"   Medium priority: {Todo.query.filter_by(priority='medium').count()}")
-            print(f"   Low priority: {Todo.query.filter_by(priority='low').count()}")
             
         except Exception as e:
             print(f"❌ Error setting up database: {e}")
