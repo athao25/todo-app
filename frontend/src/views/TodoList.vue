@@ -1,16 +1,16 @@
 <template>
-  <div class="max-w-4xl mx-auto">
+  <div class="max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto">
     <!-- Create Todo Form -->
-    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-6 mb-6 border border-white/20">
+    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-white/20">
       <TodoCreateForm @todo-created="handleTodoCreated" />
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-wrap justify-center gap-2 mb-6 relative">
+    <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 relative">
       <button
         @click="setFilter('all')"
         :class="[
-          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'all' 
             ? 'bg-white/20 text-white border border-white/30' 
             : 'text-white/70 hover:text-white hover:bg-white/10'
@@ -21,7 +21,7 @@
       <button
         @click="setFilter('active')"
         :class="[
-          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'active' 
             ? 'bg-white/20 text-white border border-white/30' 
             : 'text-white/70 hover:text-white hover:bg-white/10'
@@ -32,7 +32,7 @@
       <button
         @click="setFilter('completed')"
         :class="[
-          'px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200',
+          'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'completed' 
             ? 'bg-white/20 text-white border border-white/30' 
             : 'text-white/70 hover:text-white hover:bg-white/10'
@@ -67,48 +67,66 @@
           />
         </div>
         
-        <!-- Selection Actions Modal -->
+        <!-- Selection Actions Modal - Mobile Bottom Sheet / Desktop Sidebar -->
         <div 
           v-if="selectedTodos.size > 0"
-          class="absolute top-0 -right-80 bg-white/10 backdrop-blur-md rounded-lg shadow-xl border border-white/20 w-72 h-fit"
+          class="fixed inset-x-0 bottom-0 z-50 bg-white/10 backdrop-blur-md border-t border-white/20 p-4 sm:p-6
+                 lg:absolute lg:top-0 lg:-right-80 lg:bottom-auto lg:inset-x-auto lg:w-72 lg:h-fit lg:border lg:rounded-lg lg:border-white/20"
         >
-          <div class="p-5">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/20">
-              <h3 class="text-base font-semibold text-white">Actions</h3>
+          <div class="lg:p-0">
+            <!-- Mobile Header -->
+            <div class="flex items-center justify-between mb-4 lg:mb-4 lg:pb-3 lg:border-b lg:border-white/20">
+              <h3 class="text-base font-semibold text-white">Bulk Actions</h3>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white/80 rounded-full border border-white/30">
+                  {{ selectedTodos.size }} selected
+                </span>
+                <button
+                  @click="clearSelection"
+                  class="lg:hidden p-2 text-white/70 hover:text-white transition-colors duration-200"
+                  title="Clear selection"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Mobile Actions Grid / Desktop Vertical Stack -->
+            <div class="grid grid-cols-2 gap-2 lg:space-y-3 lg:grid-cols-1">
               <button
                 @click="toggleSelectAll"
-                class="px-3 py-2 text-xs font-medium bg-indigo-600/30 text-indigo-200 hover:bg-indigo-600/40 hover:text-white rounded-lg border border-indigo-500/50 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+                class="lg:hidden col-span-2 px-4 py-3 text-sm font-medium bg-indigo-600/30 text-indigo-200 hover:bg-indigo-600/40 hover:text-white rounded-lg border border-indigo-500/50 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 {{ isAllSelected ? 'Deselect All' : 'Select All' }}
               </button>
-              <span class="px-2 py-1 text-xs font-medium bg-white/20 text-white/80 rounded-full border border-white/30">{{ selectedTodos.size }} selected</span>
-            </div>
-            
-            <div class="space-y-3">
               
               <button
                 @click="showMarkCompletedConfirm = true"
-                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-green-600/20 text-green-300 hover:bg-green-600/30 hover:text-white border border-green-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+                class="px-4 py-3 rounded-lg text-sm font-medium bg-green-600/20 text-green-300 hover:bg-green-600/30 hover:text-white border border-green-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                Mark as Completed
+                <span class="hidden sm:inline lg:inline">Mark Completed</span>
+                <span class="sm:hidden lg:hidden">Complete</span>
               </button>
               
               <button
                 @click="showMarkIncompleteConfirm = true"
-                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30 hover:text-white border border-yellow-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+                class="px-4 py-3 rounded-lg text-sm font-medium bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30 hover:text-white border border-yellow-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Mark as Incomplete
+                <span class="hidden sm:inline lg:inline">Mark Incomplete</span>
+                <span class="sm:hidden lg:hidden">Incomplete</span>
               </button>
               
               <button
                 @click="showDeleteConfirm = true"
-                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-red-600/20 text-red-300 hover:bg-red-600/30 hover:text-white border border-red-600/30 transition-all duration-200 flex items-center justify-center gap-2"
+                class="col-span-2 lg:col-span-1 px-4 py-3 rounded-lg text-sm font-medium bg-red-600/20 text-red-300 hover:bg-red-600/30 hover:text-white border border-red-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -116,13 +134,18 @@
                 Delete Selected
               </button>
               
+              <!-- Desktop only buttons -->
+              <button
+                @click="toggleSelectAll"
+                class="hidden lg:block w-full px-4 py-3 rounded-lg text-sm font-medium bg-indigo-600/30 text-indigo-200 hover:bg-indigo-600/40 hover:text-white border border-indigo-500/50 transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                {{ isAllSelected ? 'Deselect All' : 'Select All' }}
+              </button>
+              
               <button
                 @click="clearSelection"
-                class="w-full px-4 py-3 rounded-lg text-sm font-medium bg-white/20 text-white/70 hover:bg-white/30 hover:text-white border border-white/30 transition-all duration-200 flex items-center justify-center gap-2"
+                class="hidden lg:block w-full px-4 py-3 rounded-lg text-sm font-medium bg-white/20 text-white/70 hover:bg-white/30 hover:text-white border border-white/30 transition-all duration-200 flex items-center justify-center"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
                 Clear Selection
               </button>
             </div>

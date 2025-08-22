@@ -4,7 +4,8 @@
     class="backdrop-blur-md rounded-lg shadow-xl p-4 border transition-colors duration-200 cursor-pointer"
     :class="{
       'bg-indigo-600/20 border-indigo-400 ring-2 ring-indigo-400': props.isSelected,
-      'bg-white/10 border-white/20 hover:bg-white/15': !props.isSelected
+      'bg-white/8 border-white/15 hover:bg-white/12': !props.isSelected && todo.completed,
+      'bg-white/15 border-white/30 hover:bg-white/20': !props.isSelected && !todo.completed
     }"
   >
     <div class="flex items-center space-x-3">
@@ -12,7 +13,7 @@
       <button
         @click.stop="toggleCompleted"
         :disabled="loading"
-        class="relative inline-flex h-5 w-5 items-center justify-center rounded-full border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+        class="relative inline-flex h-8 w-8 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         :class="{
           'bg-indigo-600 border-indigo-600': todo.completed,
           'hover:bg-white/30': !todo.completed
@@ -20,7 +21,7 @@
       >
         <CheckIcon 
           v-if="todo.completed"
-          class="h-3 w-3 text-white"
+          class="h-4 w-4 sm:h-3 sm:w-3 text-white"
         />
       </button>
 
@@ -28,7 +29,7 @@
       <div class="flex-1 min-w-0">
         <div v-if="!editingField.title">
           <h4 
-            class="text-base font-medium px-2 py-1 rounded"
+            class="text-base font-medium px-2 py-1 rounded break-words"
             :class="{
               'text-white': !todo.completed,
               'text-white/60 line-through': todo.completed
@@ -55,11 +56,11 @@
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-1 sm:space-x-2">
         <button
           @click.stop="startEditingField('title')"
           :disabled="loading"
-          class="p-2 text-white/60 hover:text-blue-400 transition-colors duration-200 disabled:opacity-50"
+          class="p-3 sm:p-2 text-white/60 hover:text-blue-400 transition-colors duration-200 disabled:opacity-50 rounded-lg min-h-[44px] sm:min-h-auto flex items-center justify-center"
           title="Edit todo"
         >
           <PencilIcon class="h-5 w-5" />
@@ -68,7 +69,7 @@
         <button
           @click.stop="deleteTodo"
           :disabled="loading"
-          class="p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50"
+          class="p-3 sm:p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 rounded-lg min-h-[44px] sm:min-h-auto flex items-center justify-center"
           title="Delete todo"
         >
           <TrashIcon class="h-5 w-5" />
@@ -89,6 +90,7 @@
 <script setup lang="ts">
 import { ref, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { useTodoStore } from '@/stores/todos'
+import { useToast } from '@/composables/useToast'
 import type { Todo, UpdateTodoData } from '@/types'
 import { CheckIcon, TrashIcon, PencilIcon } from '@heroicons/vue/24/outline'
 import DeleteConfirmModal from './DeleteConfirmModal.vue'
@@ -105,6 +107,7 @@ const emit = defineEmits<{
 }>()
 
 const todoStore = useTodoStore()
+const { success, error } = useToast()
 const loading = ref(false)
 const showDeleteModal = ref(false)
 const currentTime = ref(Date.now())
@@ -235,9 +238,13 @@ async function confirmDelete() {
   loading.value = true
   try {
     await todoStore.deleteTodo(props.todo.id)
+    // Use a custom toast type for deletion that shows trash icon
+    const { showToast } = useToast()
+    showToast(`"${props.todo.title}" deleted successfully!`, 'deleted', 3000)
     emit('deleted', props.todo.id)
-  } catch (error) {
-    console.error('Failed to delete todo:', error)
+  } catch (err) {
+    console.error('Failed to delete todo:', err)
+    error('Failed to delete todo. Please try again.')
   } finally {
     loading.value = false
   }
