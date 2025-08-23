@@ -35,7 +35,11 @@ class Config:
     # Database configuration from environment variables
     DATABASE_URL = os.environ.get('DATABASE_URL')
     if DATABASE_URL:
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL
+        # Fix DATABASE_URL to use psycopg driver instead of psycopg2
+        if DATABASE_URL.startswith('postgresql://'):
+            SQLALCHEMY_DATABASE_URI = DATABASE_URL.replace('postgresql://', 'postgresql+psycopg://', 1)
+        else:
+            SQLALCHEMY_DATABASE_URI = DATABASE_URL
     else:
         # Fallback: construct from individual environment variables
         db_host = os.environ.get('DB_HOST', '127.0.0.1')
