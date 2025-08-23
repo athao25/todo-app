@@ -124,10 +124,30 @@ jobs:
         MAX_ATTEMPTS=60  # 10 minutes max (60 * 10 seconds)
         ATTEMPT=0
         
+        # Wait a moment for deployment to register in API
+        echo "⏳ Waiting 5 seconds for deployment to register..."
+        sleep 5
+        
         while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
           # Get latest deployment
           DEPLOY_RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" \
             "https://api.render.com/v1/services/$SERVICE_ID/deploys?limit=1")
+          
+          echo "🔍 API Response: $DEPLOY_RESPONSE"
+          
+          # Check if response is valid JSON and has data
+          if ! echo "$DEPLOY_RESPONSE" | jq -e . >/dev/null 2>&1; then
+            echo "❌ Invalid JSON response from API"
+            echo "Raw response: $DEPLOY_RESPONSE"
+            exit 1
+          fi
+          
+          # Check if we have any deploys
+          DEPLOY_COUNT=$(echo "$DEPLOY_RESPONSE" | jq '. | length')
+          if [ "$DEPLOY_COUNT" -eq 0 ]; then
+            echo "❌ No deployments found in API response"
+            exit 1
+          fi
           
           # Extract deploy ID and status
           DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].id // empty')
@@ -135,6 +155,8 @@ jobs:
           
           if [ -z "$DEPLOY_ID" ]; then
             echo "❌ Failed to get deployment info"
+            echo "Deploy count: $DEPLOY_COUNT"
+            echo "Raw response: $DEPLOY_RESPONSE"
             exit 1
           fi
           
@@ -194,10 +216,30 @@ jobs:
         MAX_ATTEMPTS=60  # 10 minutes max (60 * 10 seconds)
         ATTEMPT=0
         
+        # Wait a moment for deployment to register in API
+        echo "⏳ Waiting 5 seconds for deployment to register..."
+        sleep 5
+        
         while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
           # Get latest deployment
           DEPLOY_RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" \
             "https://api.render.com/v1/services/$SERVICE_ID/deploys?limit=1")
+          
+          echo "🔍 API Response: $DEPLOY_RESPONSE"
+          
+          # Check if response is valid JSON and has data
+          if ! echo "$DEPLOY_RESPONSE" | jq -e . >/dev/null 2>&1; then
+            echo "❌ Invalid JSON response from API"
+            echo "Raw response: $DEPLOY_RESPONSE"
+            exit 1
+          fi
+          
+          # Check if we have any deploys
+          DEPLOY_COUNT=$(echo "$DEPLOY_RESPONSE" | jq '. | length')
+          if [ "$DEPLOY_COUNT" -eq 0 ]; then
+            echo "❌ No deployments found in API response"
+            exit 1
+          fi
           
           # Extract deploy ID and status
           DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].id // empty')
@@ -205,6 +247,8 @@ jobs:
           
           if [ -z "$DEPLOY_ID" ]; then
             echo "❌ Failed to get deployment info"
+            echo "Deploy count: $DEPLOY_COUNT"
+            echo "Raw response: $DEPLOY_RESPONSE"
             exit 1
           fi
           
