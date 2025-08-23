@@ -1,14 +1,15 @@
 <template>
-  <div class="max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto">
+  <div class="max-w-sm sm:max-w-2xl lg:max-w-4xl mx-auto" data-testid="todo-app-container">
     <!-- Create Todo Form -->
-    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-white/20">
+    <div class="bg-white/10 backdrop-blur-md rounded-lg shadow-xl p-4 sm:p-6 mb-4 sm:mb-6 border border-white/20" data-testid="todo-create-section">
       <TodoCreateForm @todo-created="handleTodoCreated" />
     </div>
 
     <!-- Filters -->
-    <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 relative">
+    <div class="flex flex-wrap justify-center gap-2 mb-4 sm:mb-6 relative" data-testid="todo-filters">
       <button
         @click="setFilter('all')"
+        data-testid="filter-all"
         :class="[
           'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'all' 
@@ -20,6 +21,7 @@
       </button>
       <button
         @click="setFilter('active')"
+        data-testid="filter-active"
         :class="[
           'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'active' 
@@ -31,6 +33,7 @@
       </button>
       <button
         @click="setFilter('completed')"
+        data-testid="filter-completed"
         :class="[
           'px-4 py-2 sm:px-3 sm:py-1 rounded-full text-sm font-medium transition-colors duration-200 min-h-[44px] sm:min-h-auto',
           currentFilter === 'completed' 
@@ -43,18 +46,18 @@
     </div>
 
     <!-- Todo List -->
-    <div class="space-y-4">
-      <div v-if="loading" class="text-center py-8">
+    <div class="space-y-4" data-testid="todo-list-container">
+      <div v-if="loading" class="text-center py-8" data-testid="loading-state">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white/50 mx-auto"></div>
         <p class="mt-4 text-white/80">Loading todos...</p>
       </div>
       
-      <div v-else-if="todos.length === 0" class="text-center py-12">
+      <div v-else-if="todos.length === 0" class="text-center py-12" data-testid="empty-state">
         <p class="text-white/90 text-lg">No todos found.</p>
         <p class="text-white/70 text-sm mt-2">Create your first todo above!</p>
       </div>
       
-      <div v-else class="relative">
+      <div v-else class="relative" data-testid="todo-list">
         <div class="space-y-6">
           <TodoItem
             v-for="todo in todos"
@@ -70,6 +73,7 @@
         <!-- Selection Actions Modal - Mobile Bottom Sheet / Desktop Sidebar -->
         <div 
           v-if="selectedTodos.size > 0"
+          data-testid="bulk-actions-panel"
           class="fixed inset-x-0 bottom-0 z-50 bg-white/10 backdrop-blur-md border-t border-white/20 p-4 sm:p-6
                  lg:absolute lg:top-0 lg:-right-80 lg:bottom-auto lg:inset-x-auto lg:w-72 lg:h-fit lg:border lg:rounded-lg lg:border-white/20"
         >
@@ -104,6 +108,7 @@
               
               <button
                 @click="showMarkCompletedConfirm = true"
+                data-testid="bulk-mark-completed"
                 class="px-4 py-3 rounded-lg text-sm font-medium bg-green-600/20 text-green-300 hover:bg-green-600/30 hover:text-white border border-green-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,6 +120,7 @@
               
               <button
                 @click="showMarkIncompleteConfirm = true"
+                data-testid="bulk-mark-incomplete"
                 class="px-4 py-3 rounded-lg text-sm font-medium bg-yellow-600/20 text-yellow-300 hover:bg-yellow-600/30 hover:text-white border border-yellow-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,6 +132,7 @@
               
               <button
                 @click="showDeleteConfirm = true"
+                data-testid="bulk-delete-selected"
                 class="col-span-2 lg:col-span-1 px-4 py-3 rounded-lg text-sm font-medium bg-red-600/20 text-red-300 hover:bg-red-600/30 hover:text-white border border-red-600/30 transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

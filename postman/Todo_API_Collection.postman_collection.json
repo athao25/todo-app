@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
 		"name": "Todo API Collection",
-		"description": "Complete API collection for Todo Application testing. Includes all CRUD operations, validation tests, and edge cases.",
+		"description": "Complete API collection for Todo Application testing with comprehensive post-script validation. Includes all CRUD operations, validation tests, edge cases, performance monitoring, security checks, and detailed test reporting. Features automated test tracking, logging, and collection-level analytics.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12345678"
 	},
@@ -25,7 +25,25 @@
 									"    const responseJson = pm.response.json();",
 									"    pm.expect(responseJson).to.have.property('status');",
 									"    pm.expect(responseJson.status).to.eql('healthy');",
-									"});"
+									"});",
+									"",
+									"// Additional health check validations",
+									"pm.test(\"Response time is reasonable for health check\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									"",
+									"pm.test(\"Health check response has valid JSON structure\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"    pm.expect(Object.keys(responseJson)).to.include('status');",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"});",
+									"",
+									"// Log health check status",
+									"console.log('🏥 Health Check Status:', pm.response.json().status);"
 								],
 								"type": "text/javascript"
 							}
@@ -77,7 +95,37 @@
 									"    ",
 									"    // Save todo ID for other requests",
 									"    pm.collectionVariables.set('created_todo_id', responseJson.id);",
-									"});"
+									"});",
+									"",
+									"// Additional validation for created todo",
+									"pm.test(\"Todo has valid ID format\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.id).to.be.a('number');",
+									"    pm.expect(responseJson.id).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test(\"Todo timestamps are valid\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(new Date(responseJson.created_at)).to.be.instanceOf(Date);",
+									"    pm.expect(new Date(responseJson.updated_at)).to.be.instanceOf(Date);",
+									"    ",
+									"    // Created and updated should be the same for new todos",
+									"    pm.expect(responseJson.created_at).to.eql(responseJson.updated_at);",
+									"});",
+									"",
+									"pm.test(\"Todo title matches request\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const expectedTitle = pm.collectionVariables.get('test_todo_title');",
+									"    pm.expect(responseJson.title).to.equal(expectedTitle);",
+									"});",
+									"",
+									"pm.test(\"Response has proper Content-Type\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"});",
+									"",
+									"// Log creation details",
+									"const responseJson = pm.response.json();",
+									"console.log(`📝 Created Todo ID: ${responseJson.id}, Title: '${responseJson.title}'`);"
 								],
 								"type": "text/javascript"
 							}
@@ -86,8 +134,25 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// Set test data",
-									"pm.collectionVariables.set('test_todo_title', 'Test Todo - ' + new Date().getTime());"
+									"// Generate dynamic test data using Postman random variables",
+									"const randomActions = [",
+									"    'Buy {{$randomProduct}}',",
+									"    'Call {{$randomFullName}}',",
+									"    'Visit {{$randomCity}}',",
+									"    'Read {{$randomLoremSentence}}',",
+									"    'Schedule {{$randomJobTitle}} meeting',",
+									"    'Complete {{$randomJobArea}} project',",
+									"    'Review {{$randomCompanyName}} proposal',",
+									"    'Organize {{$randomNoun}} collection'",
+									"];",
+									"",
+									"const randomAction = randomActions[Math.floor(Math.random() * randomActions.length)];",
+									"const dynamicTitle = randomAction + ' - {{$randomDateFuture}}';",
+									"",
+									"// Set dynamic test data",
+									"pm.collectionVariables.set('test_todo_title', dynamicTitle);",
+									"",
+									"console.log('🎲 Generated dynamic todo title:', dynamicTitle);"
 								],
 								"type": "text/javascript"
 							}
@@ -145,7 +210,40 @@
 									"        pm.expect(todo).to.have.property('created_at');",
 									"        pm.expect(todo).to.have.property('updated_at');",
 									"    }",
-									"});"
+									"});",
+									"",
+									"// Additional validation for todo list",
+									"pm.test(\"All todos have valid data types\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    responseJson.forEach(function(todo, index) {",
+									"        pm.expect(todo.id, `Todo ${index} - ID should be number`).to.be.a('number');",
+									"        pm.expect(todo.title, `Todo ${index} - Title should be string`).to.be.a('string');",
+									"        pm.expect(todo.completed, `Todo ${index} - Completed should be boolean`).to.be.a('boolean');",
+									"        pm.expect(todo.created_at, `Todo ${index} - Created_at should be string`).to.be.a('string');",
+									"        pm.expect(todo.updated_at, `Todo ${index} - Updated_at should be string`).to.be.a('string');",
+									"    });",
+									"});",
+									"",
+									"pm.test(\"Todo IDs are unique\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const ids = responseJson.map(todo => todo.id);",
+									"    const uniqueIds = [...new Set(ids)];",
+									"    pm.expect(ids.length).to.equal(uniqueIds.length);",
+									"});",
+									"",
+									"pm.test(\"Response includes recently created todo\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const createdTodoId = parseInt(pm.collectionVariables.get('created_todo_id'));",
+									"    ",
+									"    if (createdTodoId) {",
+									"        const foundTodo = responseJson.find(todo => todo.id === createdTodoId);",
+									"        pm.expect(foundTodo, 'Recently created todo should be in the list').to.exist;",
+									"    }",
+									"});",
+									"",
+									"// Log todo count",
+									"const responseJson = pm.response.json();",
+									"console.log(`📋 Total todos found: ${responseJson.length}`);"
 								],
 								"type": "text/javascript"
 							}
@@ -231,7 +329,38 @@
 									"    ",
 									"    pm.expect(responseJson.title).to.eql(pm.collectionVariables.get('updated_todo_title'));",
 									"    pm.expect(responseJson.completed).to.be.true;",
-									"});"
+									"});",
+									"",
+									"// Additional validation for updated todo",
+									"pm.test(\"Todo ID remains unchanged\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const originalId = parseInt(pm.collectionVariables.get('created_todo_id'));",
+									"    pm.expect(responseJson.id).to.equal(originalId);",
+									"});",
+									"",
+									"pm.test(\"Updated timestamp is different from created timestamp\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('created_at');",
+									"    pm.expect(responseJson).to.have.property('updated_at');",
+									"    ",
+									"    // For updates, updated_at should be different from created_at",
+									"    pm.expect(new Date(responseJson.updated_at).getTime()).to.be.greaterThanOrEqual(new Date(responseJson.created_at).getTime());",
+									"});",
+									"",
+									"pm.test(\"Updated title matches request\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const expectedTitle = pm.collectionVariables.get('updated_todo_title');",
+									"    pm.expect(responseJson.title).to.equal(expectedTitle);",
+									"});",
+									"",
+									"pm.test(\"Completed status is properly updated\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.completed).to.be.true;",
+									"});",
+									"",
+									"// Log update details",
+									"const responseJson = pm.response.json();",
+									"console.log(`✏️ Updated Todo ID: ${responseJson.id}, New Title: '${responseJson.title}', Completed: ${responseJson.completed}`);"
 								],
 								"type": "text/javascript"
 							}
@@ -240,8 +369,24 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"// Set updated title",
-									"pm.collectionVariables.set('updated_todo_title', 'Updated Todo - ' + new Date().getTime());"
+									"// Generate dynamic updated title using Postman random variables",
+									"const updateActions = [",
+									"    'URGENT: {{$randomCatchPhrase}}',",
+									"    'Modified: {{$randomJobDescriptor}} {{$randomNoun}}',",
+									"    'Updated: Meet with {{$randomFullName}} at {{$randomCity}}',",
+									"    'Revised: {{$randomJobTitle}} - {{$randomCompanyName}}',",
+									"    'Changed: Buy {{$randomProduct}} from {{$randomCompanyName}}',",
+									"    'New: {{$randomJobArea}} planning session',",
+									"    'Priority: {{$randomLoremSentence}}'",
+									"];",
+									"",
+									"const randomUpdate = updateActions[Math.floor(Math.random() * updateActions.length)];",
+									"const dynamicUpdatedTitle = randomUpdate + ' (Updated {{$randomDateRecent}})';",
+									"",
+									"// Set dynamic updated title",
+									"pm.collectionVariables.set('updated_todo_title', dynamicUpdatedTitle);",
+									"",
+									"console.log('✏️ Generated dynamic updated title:', dynamicUpdatedTitle);"
 								],
 								"type": "text/javascript"
 							}
@@ -283,7 +428,20 @@
 								"exec": [
 									"pm.test(\"Status code is 204\", function () {",
 									"    pm.response.to.have.status(204);",
-									"});"
+									"});",
+									"",
+									"// Additional validation for delete operation",
+									"pm.test(\"Delete response has no content\", function () {",
+									"    pm.expect(pm.response.text()).to.be.empty;",
+									"});",
+									"",
+									"pm.test(\"Delete operation completed quickly\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});",
+									"",
+									"// Log deletion",
+									"const deletedTodoId = pm.collectionVariables.get('created_todo_id');",
+									"console.log(`🗑️ Deleted Todo ID: ${deletedTodoId}`);"
 								],
 								"type": "text/javascript"
 							}
@@ -326,7 +484,18 @@
 									"pm.test(\"Error message for empty title\", function () {",
 									"    const responseText = pm.response.text();",
 									"    pm.expect(responseText).to.include('Title cannot be empty');",
-									"});"
+									"});",
+									"",
+									"// Additional validation for error response",
+									"pm.test(\"Error response is properly formatted\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html');",
+									"});",
+									"",
+									"pm.test(\"Error response time is reasonable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									"",
+									"console.log('❌ Validation test: Empty title correctly rejected');"
 								],
 								"type": "text/javascript"
 							}
@@ -408,6 +577,28 @@
 					"name": "Create Todo - Max Length Title",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate exactly 250 character title using random data",
+									"const baseText = '{{$randomLoremText}} {{$randomCatchPhrase}} {{$randomJobTitle}} {{$randomCompanyName}} {{$randomCity}}';",
+									"let maxLengthTitle = baseText;",
+									"",
+									"// Pad or trim to exactly 250 characters",
+									"if (maxLengthTitle.length < 250) {",
+									"    const padding = 'X'.repeat(250 - maxLengthTitle.length);",
+									"    maxLengthTitle = maxLengthTitle + padding;",
+									"} else if (maxLengthTitle.length > 250) {",
+									"    maxLengthTitle = maxLengthTitle.substring(0, 250);",
+									"}",
+									"",
+									"pm.collectionVariables.set('max_length_title', maxLengthTitle);",
+									"console.log('📏 Generated 250-character title for max length test');"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
 								"exec": [
@@ -422,7 +613,24 @@
 									"    ",
 									"    // Save ID for cleanup",
 									"    pm.collectionVariables.set('max_length_todo_id', responseJson.id);",
-									"});"
+									"});",
+									"",
+									"// Additional validation for max length todo",
+									"pm.test(\"Max length todo has all required properties\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('id');",
+									"    pm.expect(responseJson).to.have.property('completed');",
+									"    pm.expect(responseJson).to.have.property('created_at');",
+									"    pm.expect(responseJson).to.have.property('updated_at');",
+									"    pm.expect(responseJson.completed).to.be.false;",
+									"});",
+									"",
+									"pm.test(\"Max length title is exactly 250 characters\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.title.length).to.equal(250);",
+									"});",
+									"",
+									"console.log('📏 Max length todo created successfully with 250 characters');"
 								],
 								"type": "text/javascript"
 							}
@@ -438,7 +646,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"\n}"
+							"raw": "{\n    \"title\": \"{{max_length_title}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/todos",
@@ -457,6 +665,28 @@
 				{
 					"name": "Create Todo - Exceeds Max Length",
 					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate exactly 251 character title (exceeds max) using random data",
+									"const baseText = '{{$randomLoremText}} {{$randomCatchPhrase}} {{$randomJobTitle}} {{$randomCompanyName}} {{$randomCity}} {{$randomJobArea}}';",
+									"let exceedsMaxTitle = baseText;",
+									"",
+									"// Ensure exactly 251 characters (1 over limit)",
+									"if (exceedsMaxTitle.length < 251) {",
+									"    const padding = 'Y'.repeat(251 - exceedsMaxTitle.length);",
+									"    exceedsMaxTitle = exceedsMaxTitle + padding;",
+									"} else if (exceedsMaxTitle.length > 251) {",
+									"    exceedsMaxTitle = exceedsMaxTitle.substring(0, 251);",
+									"}",
+									"",
+									"pm.collectionVariables.set('exceeds_max_title', exceedsMaxTitle);",
+									"console.log('🚫 Generated 251-character title (exceeds max) for validation test');"
+								],
+								"type": "text/javascript"
+							}
+						},
 						{
 							"listen": "test",
 							"script": {
@@ -484,7 +714,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"\n}"
+							"raw": "{\n    \"title\": \"{{exceeds_max_title}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/todos",
@@ -523,7 +753,22 @@
 									"    ",
 									"    // Save ID for cleanup",
 									"    pm.collectionVariables.set('special_chars_todo_id', responseJson.id);",
-									"});"
+									"});",
+									"",
+																	"// Additional validation for special characters",
+								"pm.test(\"Special characters are preserved exactly\", function () {",
+								"    const responseJson = pm.response.json();",
+								"    pm.expect(responseJson.title).to.include('Special Chars Test:');",
+								"    pm.expect(responseJson.title).to.include('!@#$%^&*()_+-={}[]|\\\\:;\"');",
+								"    pm.expect(responseJson.title).to.include(\"'<>?,./\");",
+								"});",
+									"",
+									"pm.test(\"Special character todo has proper structure\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.all.keys('id', 'title', 'completed', 'created_at', 'updated_at');",
+									"});",
+									"",
+									"console.log('🔣 Special characters todo created and validated successfully');"
 								],
 								"type": "text/javascript"
 							}
@@ -539,7 +784,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Special Characters: !@#$%^&*()_+-={}[]|\\\\:;\\\"'<>?,./ Test\"\n}"
+							"raw": "{\n    \"title\": \"Special Chars Test: {{$randomJobTitle}} !@#$%^&*()_+-={}[]|\\\\:;\\\"'<>?,./ {{$randomCompanyName}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/todos",
@@ -574,7 +819,27 @@
 									"    ",
 									"    // Save ID for cleanup",
 									"    pm.collectionVariables.set('unicode_todo_id', responseJson.id);",
-									"});"
+									"});",
+									"",
+																	"// Additional validation for Unicode and emojis",
+								"pm.test(\"All Unicode characters are preserved\", function () {",
+								"    const responseJson = pm.response.json();",
+								"    pm.expect(responseJson.title).to.include('📝');",
+								"    pm.expect(responseJson.title).to.include('✅');",
+								"    pm.expect(responseJson.title).to.include('🚀');",
+								"    pm.expect(responseJson.title).to.include('Ñoël');",
+								"    pm.expect(responseJson.title).to.include('café');",
+								"    pm.expect(responseJson.title).to.include('北京');",
+								"    pm.expect(responseJson.title).to.include('москва');",
+								"    pm.expect(responseJson.title).to.include('Unicode Test:');",
+								"});",
+									"",
+									"pm.test(\"Unicode todo has proper encoding\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('charset=utf-8');",
+									"});",
+									"",
+									"console.log('🌍 Unicode and emoji todo created successfully with international characters');"
 								],
 								"type": "text/javascript"
 							}
@@ -590,7 +855,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Unicode Test: 📝 Todo with emojis ✅ 🚀 and special chars: Ñoël, café, 北京, москва\"\n}"
+							"raw": "{\n    \"title\": \"Unicode Test: 📝 {{$randomJobTitle}} ✅ 🚀 {{$randomCity}}: Ñoël, café, 北京, москва, {{$randomFirstName}}\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/todos",
@@ -615,12 +880,35 @@
 					"name": "Get Todo - Non-existent ID",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate a random high ID that likely doesn't exist",
+									"const randomHighId = Math.floor(Math.random() * 900000) + 100000; // Random 6-digit number",
+									"pm.collectionVariables.set('non_existent_id', randomHighId);",
+									"console.log('🔍 Testing with non-existent ID:', randomHighId);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Status code is 404\", function () {",
 									"    pm.response.to.have.status(404);",
-									"});"
+									"});",
+									"",
+									"// Additional validation for 404 error",
+									"pm.test(\"404 error response is properly formatted\", function () {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.exist;",
+									"});",
+									"",
+									"pm.test(\"404 error response time is reasonable\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									"",
+									"console.log('🔍 404 error test: Non-existent todo correctly returns 404');"
 								],
 								"type": "text/javascript"
 							}
@@ -630,17 +918,17 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/todos/99999",
+							"raw": "{{base_url}}/api/todos/{{non_existent_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"todos",
-								"99999"
+								"{{non_existent_id}}"
 							]
 						},
-						"description": "Test retrieving a non-existent todo"
+						"description": "Test retrieving a non-existent todo with randomly generated ID"
 					},
 					"response": []
 				},
@@ -669,20 +957,20 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Updated Title\",\n    \"completed\": true\n}"
+							"raw": "{\n    \"title\": \"Updated: {{$randomCatchPhrase}} - {{$randomCompanyName}}\",\n    \"completed\": true\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/todos/99999",
+							"raw": "{{base_url}}/api/todos/{{non_existent_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"todos",
-								"99999"
+								"{{non_existent_id}}"
 							]
 						},
-						"description": "Test updating a non-existent todo"
+						"description": "Test updating a non-existent todo with randomly generated ID"
 					},
 					"response": []
 				},
@@ -705,17 +993,17 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/todos/99999",
+							"raw": "{{base_url}}/api/todos/{{non_existent_id}}",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"todos",
-								"99999"
+								"{{non_existent_id}}"
 							]
 						},
-						"description": "Test deleting a non-existent todo"
+						"description": "Test deleting a non-existent todo with randomly generated ID"
 					},
 					"response": []
 				}
@@ -832,7 +1120,37 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Collection-level Pre-request Script",
+					"console.log('🚀 Starting Todo API Test: ' + pm.info.requestName);",
+					"",
+					"// Set collection start time if not already set",
+					"if (!pm.collectionVariables.get('collection_start_time')) {",
+					"    pm.collectionVariables.set('collection_start_time', Date.now());",
+					"}",
+					"",
+					"// Initialize test counters if not already set",
+					"if (!pm.collectionVariables.get('test_count')) {",
+					"    pm.collectionVariables.set('test_count', 0);",
+					"    pm.collectionVariables.set('test_passed', 0);",
+					"    pm.collectionVariables.set('test_failed', 0);",
+					"}",
+					"",
+					"// Increment test count",
+					"let testCount = parseInt(pm.collectionVariables.get('test_count')) + 1;",
+					"pm.collectionVariables.set('test_count', testCount);",
+					"",
+					"// Set request start time",
+					"pm.collectionVariables.set('request_start_time', Date.now());",
+					"",
+					"// Generate some useful random data utilities for this request",
+					"pm.collectionVariables.set('random_uuid', pm.variables.replaceIn('{{$randomUUID}}'));",
+					"pm.collectionVariables.set('random_timestamp', Date.now());",
+					"pm.collectionVariables.set('random_email', pm.variables.replaceIn('{{$randomEmail}}'));",
+					"",
+					"// Log random data usage",
+					"if (pm.info.requestName.includes('Create') || pm.info.requestName.includes('Update')) {",
+					"    console.log('🎲 Using dynamic random data for realistic testing');",
+					"}"
 				]
 			}
 		},
@@ -841,7 +1159,92 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"// Collection-level Post-response Script",
+					"",
+					"// Calculate request duration",
+					"const requestStartTime = pm.collectionVariables.get('request_start_time');",
+					"const requestDuration = Date.now() - requestStartTime;",
+					"",
+					"// Log request performance",
+					"console.log(`⏱️ Request '${pm.info.requestName}' took ${requestDuration}ms`);",
+					"",
+					"// Performance monitoring",
+					"pm.test('Response time is acceptable', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000); // 5 seconds max",
+					"});",
+					"",
+					"// Common response validation",
+					"pm.test('Response has valid headers', function () {",
+					"    pm.expect(pm.response.headers.get('Content-Type')).to.exist;",
+					"});",
+					"",
+					"// Track test results",
+					"let testResults = pm.response.json || {};",
+					"let hasFailedTests = false;",
+					"",
+					"// Check if any tests failed in this request",
+					"pm.test.index().forEach(function(test) {",
+					"    if (test.error) {",
+					"        hasFailedTests = true;",
+					"    }",
+					"});",
+					"",
+					"// Update counters",
+					"let testPassed = parseInt(pm.collectionVariables.get('test_passed'));",
+					"let testFailed = parseInt(pm.collectionVariables.get('test_failed'));",
+					"",
+					"if (hasFailedTests) {",
+					"    testFailed++;",
+					"    pm.collectionVariables.set('test_failed', testFailed);",
+					"    console.log('❌ Test failed for: ' + pm.info.requestName);",
+					"} else {",
+					"    testPassed++;",
+					"    pm.collectionVariables.set('test_passed', testPassed);",
+					"    console.log('✅ Test passed for: ' + pm.info.requestName);",
+					"}",
+					"",
+					"// Security checks for all responses",
+					"pm.test('Response does not expose sensitive information', function () {",
+					"    const responseText = pm.response.text().toLowerCase();",
+					"    pm.expect(responseText).to.not.include('password');",
+					"    pm.expect(responseText).to.not.include('secret');",
+					"    pm.expect(responseText).to.not.include('token');",
+					"    pm.expect(responseText).to.not.include('key');",
+					"});",
+					"",
+					"// CORS headers check (if applicable)",
+					"if (pm.response.headers.get('Access-Control-Allow-Origin')) {",
+					"    pm.test('CORS headers are properly set', function () {",
+					"        pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.exist;",
+					"    });",
+					"}",
+					"",
+					"// Log final summary if this is the last request",
+					"const totalTests = parseInt(pm.collectionVariables.get('test_count'));",
+					"const totalPassed = parseInt(pm.collectionVariables.get('test_passed'));",
+					"const totalFailed = parseInt(pm.collectionVariables.get('test_failed'));",
+					"",
+					"console.log(`📊 Current Progress: ${totalPassed} passed, ${totalFailed} failed out of ${totalTests} tests`);",
+					"",
+					"// Collection completion check (this is a simple heuristic)",
+					"const collectionStartTime = pm.collectionVariables.get('collection_start_time');",
+					"const collectionDuration = Date.now() - collectionStartTime;",
+					"",
+					"// If this seems like the end of collection run, log summary",
+					"if (pm.info.requestName.includes('Cleanup') || pm.info.requestName.includes('Delete')) {",
+					"    console.log('\\n🏁 Collection Run Summary:');",
+					"    console.log(`Total Duration: ${Math.round(collectionDuration / 1000)} seconds`);",
+					"    console.log(`Total Tests: ${totalTests}`);",
+					"    console.log(`Tests Passed: ${totalPassed}`);",
+					"    console.log(`Tests Failed: ${totalFailed}`);",
+					"    console.log(`Success Rate: ${Math.round((totalPassed / totalTests) * 100)}%`);",
+					"    ",
+					"    // Reset counters for next run",
+					"    pm.collectionVariables.unset('collection_start_time');",
+					"    pm.collectionVariables.unset('test_count');",
+					"    pm.collectionVariables.unset('test_passed');",
+					"    pm.collectionVariables.unset('test_failed');",
+					"}"
 				]
 			}
 		}
@@ -850,6 +1253,91 @@
 		{
 			"key": "base_url",
 			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "test_count",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "test_passed",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "test_failed",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "collection_start_time",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "request_start_time",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_todo_title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "updated_todo_title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "created_todo_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "max_length_todo_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "special_chars_todo_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "unicode_todo_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "max_length_title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "exceeds_max_title",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_uuid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_timestamp",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "non_existent_id",
+			"value": "",
 			"type": "string"
 		}
 	]

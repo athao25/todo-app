@@ -1,6 +1,7 @@
 <template>
   <div 
     @click="toggleSelection"
+    :data-testid="`todo-item-${todo.id}`"
     class="backdrop-blur-md rounded-lg shadow-xl p-4 border transition-colors duration-200 cursor-pointer"
     :class="{
       'bg-indigo-600/20 border-indigo-400 ring-2 ring-indigo-400': props.isSelected,
@@ -12,6 +13,7 @@
       <!-- Checkbox -->
       <button
         @click.stop="toggleCompleted"
+        :data-testid="`todo-checkbox-${todo.id}`"
         :disabled="loading"
         class="relative inline-flex h-8 w-8 sm:h-5 sm:w-5 items-center justify-center rounded-full border border-white/30 bg-white/20 transition-colors duration-200 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
         :class="{
@@ -29,6 +31,7 @@
       <div class="flex-1 min-w-0">
         <div v-if="!editingField.title">
           <h4 
+            :data-testid="`todo-title-${todo.id}`"
             class="text-base font-medium px-2 py-1 rounded break-words"
             :class="{
               'text-white': !todo.completed,
@@ -59,6 +62,7 @@
       <div class="flex items-center space-x-1 sm:space-x-2">
         <button
           @click.stop="startEditingField('title')"
+          :data-testid="`todo-edit-${todo.id}`"
           :disabled="loading"
           class="p-3 sm:p-2 text-white/60 hover:text-blue-400 transition-colors duration-200 disabled:opacity-50 rounded-lg min-h-[44px] sm:min-h-auto flex items-center justify-center"
           title="Edit todo"
@@ -68,6 +72,7 @@
         
         <button
           @click.stop="deleteTodo"
+          :data-testid="`todo-delete-${todo.id}`"
           :disabled="loading"
           class="p-3 sm:p-2 text-white/60 hover:text-red-400 transition-colors duration-200 disabled:opacity-50 rounded-lg min-h-[44px] sm:min-h-auto flex items-center justify-center"
           title="Delete todo"

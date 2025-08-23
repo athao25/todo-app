@@ -5,63 +5,114 @@ Run this script to create the database tables and populate with test data.
 """
 
 import sys
-import random
 from datetime import datetime, timedelta, timezone
 from app import create_app
 from models import db, Todo
 
 def create_test_data():
-    """Create sample todos for testing"""
+    """Create sample todos for testing with specific time ranges"""
     
-    # Sample todos with various states
+    # Get current time for calculating specific time ranges
+    now = datetime.now(timezone.utc)
+    
+    # Test todos with specific time ranges to test all formatter functions
     test_todos = [
+        # Test "just now" (under 1 minute)
         {
-            'title': 'Complete project proposal',
-            'completed': False
+            'title': 'Just created task',
+            'completed': False,
+            'created_at': now - timedelta(seconds=30)
+        },
+        # Test under 5 minutes
+        {
+            'title': 'Very recent task',
+            'completed': False,
+            'created_at': now - timedelta(minutes=2)
+        },
+        # Test 5-minute intervals (5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55 mins)
+        {
+            'title': '5 minutes ago task',
+            'completed': False,
+            'created_at': now - timedelta(minutes=5)
         },
         {
-            'title': 'Buy groceries',
-            'completed': False
+            'title': '15 minutes ago task',
+            'completed': True,
+            'created_at': now - timedelta(minutes=15)
         },
         {
-            'title': 'Call dentist appointment',
-            'completed': False
+            'title': '30 minutes ago task',
+            'completed': False,
+            'created_at': now - timedelta(minutes=30)
         },
         {
-            'title': 'Review code changes',
-            'completed': False
+            'title': '45 minutes ago task',
+            'completed': True,
+            'created_at': now - timedelta(minutes=45)
+        },
+        # Test exactly 1 hour
+        {
+            'title': 'Exactly 1 hour ago task',
+            'completed': False,
+            'created_at': now - timedelta(hours=1)
+        },
+        # Test multiple hours (under 24)
+        {
+            'title': '2 hours ago task',
+            'completed': True,
+            'created_at': now - timedelta(hours=2)
         },
         {
-            'title': 'Update website content',
-            'completed': False
+            'title': '6 hours ago task',
+            'completed': False,
+            'created_at': now - timedelta(hours=6)
         },
         {
-            'title': 'Organize desk workspace',
-            'completed': True
+            'title': '12 hours ago task',
+            'completed': False,
+            'created_at': now - timedelta(hours=12)
         },
         {
-            'title': 'Send birthday card',
-            'completed': True
+            'title': '23 hours ago task',
+            'completed': True,
+            'created_at': now - timedelta(hours=23)
+        },
+        # Test exactly 24 hours (1 day)
+        {
+            'title': 'Exactly 1 day ago task',
+            'completed': False,
+            'created_at': now - timedelta(days=1)
+        },
+        # Test multiple days
+        {
+            'title': '3 days ago task',
+            'completed': True,
+            'created_at': now - timedelta(days=3)
         },
         {
-            'title': 'Learn new programming framework',
-            'completed': False
+            'title': '1 week ago task',
+            'completed': False,
+            'created_at': now - timedelta(days=7)
         },
         {
-            'title': 'Plan team meeting agenda',
-            'completed': False
+            'title': '2 weeks ago task',
+            'completed': False,
+            'created_at': now - timedelta(days=14)
         },
         {
-            'title': 'Fix bug in login system',
-            'completed': False
+            'title': '1 month ago task',
+            'completed': True,
+            'created_at': now - timedelta(days=30)
         },
         {
-            'title': 'Water plants',
-            'completed': True
+            'title': '2 months ago task',
+            'completed': False,
+            'created_at': now - timedelta(days=60)
         },
         {
-            'title': 'Backup important files',
-            'completed': False
+            'title': '3 months ago task',
+            'completed': True,
+            'created_at': now - timedelta(days=90)
         }
     ]
     
@@ -94,20 +145,10 @@ def setup_database():
             print(f"📝 Creating {len(test_todos)} test todos...")
             
             for todo_data in test_todos:
-                # Create datetime objects with wider variation in creation times (up to 2-3 months)
-                days_ago = random.randint(1, 90)  # Random day within last 2-3 months
-                hours_variation = random.randint(0, 23)  # Random hour of day
-                minutes_variation = random.randint(0, 59)  # Random minute
-                
-                created_time = datetime.now(timezone.utc) - timedelta(
-                    days=days_ago,
-                    hours=hours_variation, 
-                    minutes=minutes_variation
-                )
-                
                 todo = Todo(
                     title=todo_data['title'],
-                    completed=todo_data['completed']
+                    completed=todo_data['completed'],
+                    created_at=todo_data['created_at']
                 )
                 
                 db.session.add(todo)

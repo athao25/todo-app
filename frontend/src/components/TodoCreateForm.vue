@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div data-testid="todo-create-form">
     <form @submit.prevent="handleSubmit" class="space-y-2">
       <div class="flex flex-col sm:flex-row gap-3 sm:gap-2">
         <div class="flex-1 space-y-1">
           <input
             ref="titleInput"
             v-model="form.title"
+            data-testid="todo-input"
             type="text"
             maxlength="250"
             class="w-full rounded-lg bg-white/20 border-white/30 text-white placeholder-white/60 shadow-sm focus:border-indigo-400 focus:ring-indigo-400 text-base sm:text-sm transition-colors duration-200 px-4 py-3 sm:px-3 sm:py-2 min-h-[44px] sm:min-h-auto"
@@ -32,6 +33,7 @@
         </div>
         <button
           type="submit"
+          data-testid="todo-add-button"
           :disabled="loading || !form.title.trim() || form.title.length > 250"
           class="px-6 py-3 sm:px-4 sm:py-2 rounded-lg border border-transparent bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 min-h-[44px] sm:min-h-auto font-medium self-start"
         >
