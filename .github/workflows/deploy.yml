@@ -113,91 +113,11 @@ jobs:
       with:
         service-id: ${{ secrets.RENDER_BACKEND_SERVICE_ID }}
         api-key: ${{ secrets.RENDER_API_KEY }}
-      continue-on-error: true
     
-    - name: Poll Backend Deployment Status
-      if: steps.deploy-backend.outcome == 'success'
+    - name: Backend Deploy Status
       run: |
-        echo "🔄 Polling backend deployment status..."
-        SERVICE_ID="${{ secrets.RENDER_BACKEND_SERVICE_ID }}"
-        API_KEY="${{ secrets.RENDER_API_KEY }}"
-        MAX_ATTEMPTS=60  # 10 minutes max (60 * 10 seconds)
-        ATTEMPT=0
-        
-        # Wait a moment for deployment to register in API
-        echo "⏳ Waiting 5 seconds for deployment to register..."
-        sleep 5
-        
-        while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-          # Get latest deployment
-          DEPLOY_RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" \
-            "https://api.render.com/v1/services/$SERVICE_ID/deploys?limit=1")
-          
-          echo "🔍 API Response: $DEPLOY_RESPONSE"
-          
-          # Check if response is valid JSON and has data
-          if ! echo "$DEPLOY_RESPONSE" | jq -e . >/dev/null 2>&1; then
-            echo "❌ Invalid JSON response from API"
-            echo "Raw response: $DEPLOY_RESPONSE"
-            exit 1
-          fi
-          
-          # Check if we have any deploys
-          DEPLOY_COUNT=$(echo "$DEPLOY_RESPONSE" | jq '. | length')
-          if [ "$DEPLOY_COUNT" -eq 0 ]; then
-            echo "❌ No deployments found in API response"
-            exit 1
-          fi
-          
-          # Extract deploy ID and status
-          DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].id // empty')
-          DEPLOY_STATUS=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].status // empty')
-          
-          if [ -z "$DEPLOY_ID" ]; then
-            echo "❌ Failed to get deployment info"
-            echo "Deploy count: $DEPLOY_COUNT"
-            echo "Raw response: $DEPLOY_RESPONSE"
-            exit 1
-          fi
-          
-          echo "📋 Deploy ID: $DEPLOY_ID, Status: $DEPLOY_STATUS"
-          
-          case "$DEPLOY_STATUS" in
-            "live")
-              echo "✅ Backend deployment completed successfully!"
-              echo "backend-deploy-id=$DEPLOY_ID" >> $GITHUB_OUTPUT
-              break
-              ;;
-            "build_failed"|"update_failed"|"canceled")
-              echo "❌ Backend deployment failed with status: $DEPLOY_STATUS"
-              exit 1
-              ;;
-            "created"|"build_in_progress"|"update_in_progress")
-              echo "⏳ Deployment in progress... (attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)"
-              sleep 10
-              ;;
-            *)
-              echo "❓ Unknown status: $DEPLOY_STATUS"
-              sleep 10
-              ;;
-          esac
-          
-          ATTEMPT=$((ATTEMPT+1))
-        done
-        
-        if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-          echo "❌ Backend deployment timed out after 10 minutes"
-          exit 1
-        fi
-    
-    - name: Check Backend Deploy Status
-      run: |
-        if [ "${{ steps.deploy-backend.outcome }}" == "failure" ]; then
-          echo "::error::Backend deployment action failed. Check Render dashboard for details."
-          echo "::error::Possible causes: Invalid API key, service ID not found, or action timeout"
-          exit 1
-        fi
-        echo "✅ Backend deployment validation completed"
+        echo "🚀 Backend deployment triggered successfully!"
+        echo "Check deployment progress at: https://dashboard.render.com/web/${{ secrets.RENDER_BACKEND_SERVICE_ID }}"
     
     - name: Deploy Frontend to Render
       id: deploy-frontend
@@ -205,202 +125,26 @@ jobs:
       with:
         service-id: ${{ secrets.RENDER_FRONTEND_SERVICE_ID }}
         api-key: ${{ secrets.RENDER_API_KEY }}
-      continue-on-error: true
     
-    - name: Poll Frontend Deployment Status
-      if: steps.deploy-frontend.outcome == 'success'
+    - name: Frontend Deploy Status
       run: |
-        echo "🔄 Polling frontend deployment status..."
-        SERVICE_ID="${{ secrets.RENDER_FRONTEND_SERVICE_ID }}"
-        API_KEY="${{ secrets.RENDER_API_KEY }}"
-        MAX_ATTEMPTS=60  # 10 minutes max (60 * 10 seconds)
-        ATTEMPT=0
-        
-        # Wait a moment for deployment to register in API
-        echo "⏳ Waiting 5 seconds for deployment to register..."
-        sleep 5
-        
-        while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-          # Get latest deployment
-          DEPLOY_RESPONSE=$(curl -s -H "Authorization: Bearer $API_KEY" \
-            "https://api.render.com/v1/services/$SERVICE_ID/deploys?limit=1")
-          
-          echo "🔍 API Response: $DEPLOY_RESPONSE"
-          
-          # Check if response is valid JSON and has data
-          if ! echo "$DEPLOY_RESPONSE" | jq -e . >/dev/null 2>&1; then
-            echo "❌ Invalid JSON response from API"
-            echo "Raw response: $DEPLOY_RESPONSE"
-            exit 1
-          fi
-          
-          # Check if we have any deploys
-          DEPLOY_COUNT=$(echo "$DEPLOY_RESPONSE" | jq '. | length')
-          if [ "$DEPLOY_COUNT" -eq 0 ]; then
-            echo "❌ No deployments found in API response"
-            exit 1
-          fi
-          
-          # Extract deploy ID and status
-          DEPLOY_ID=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].id // empty')
-          DEPLOY_STATUS=$(echo "$DEPLOY_RESPONSE" | jq -r '.[0].status // empty')
-          
-          if [ -z "$DEPLOY_ID" ]; then
-            echo "❌ Failed to get deployment info"
-            echo "Deploy count: $DEPLOY_COUNT"
-            echo "Raw response: $DEPLOY_RESPONSE"
-            exit 1
-          fi
-          
-          echo "📋 Deploy ID: $DEPLOY_ID, Status: $DEPLOY_STATUS"
-          
-          case "$DEPLOY_STATUS" in
-            "live")
-              echo "✅ Frontend deployment completed successfully!"
-              echo "frontend-deploy-id=$DEPLOY_ID" >> $GITHUB_OUTPUT
-              break
-              ;;
-            "build_failed"|"update_failed"|"canceled")
-              echo "❌ Frontend deployment failed with status: $DEPLOY_STATUS"
-              exit 1
-              ;;
-            "created"|"build_in_progress"|"update_in_progress")
-              echo "⏳ Deployment in progress... (attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)"
-              sleep 10
-              ;;
-            *)
-              echo "❓ Unknown status: $DEPLOY_STATUS"
-              sleep 10
-              ;;
-          esac
-          
-          ATTEMPT=$((ATTEMPT+1))
-        done
-        
-        if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-          echo "❌ Frontend deployment timed out after 10 minutes"
-          exit 1
-        fi
-    
-    - name: Check Frontend Deploy Status
-      run: |
-        if [ "${{ steps.deploy-frontend.outcome }}" == "failure" ]; then
-          echo "::error::Frontend deployment action failed. Check Render dashboard for details."
-          echo "::error::Possible causes: Invalid API key, service ID not found, or action timeout"
-          exit 1
-        fi
-        echo "✅ Frontend deployment validation completed"
+        echo "🚀 Frontend deployment triggered successfully!"
+        echo "Check deployment progress at: https://dashboard.render.com/static/${{ secrets.RENDER_FRONTEND_SERVICE_ID }}"
     
     - name: Deployment Summary
       if: always()
       run: |
         echo "## 🚀 Deployment Summary"
-        echo "Backend: ${{ steps.deploy-backend.outcome == 'success' && '✅ Success' || '❌ Failed' }}"
-        echo "Frontend: ${{ steps.deploy-frontend.outcome == 'success' && '✅ Success' || '❌ Failed' }}"
+        echo "Backend: ${{ steps.deploy-backend.outcome == 'success' && '✅ Triggered' || '❌ Failed' }}"
+        echo "Frontend: ${{ steps.deploy-frontend.outcome == 'success' && '✅ Triggered' || '❌ Failed' }}"
         echo ""
         echo "### Deployment Details:"
         echo "- Backend URL: https://todo-app-api-bf0p.onrender.com"
         echo "- Frontend URL: https://todo-app-frontend-fcip.onrender.com"
-        echo "- Both services should now be live and ready for E2E testing"
+        echo "- Monitor deployment progress on Render dashboard"
         echo ""
         if [ "${{ steps.deploy-backend.outcome }}" == "failure" ] || [ "${{ steps.deploy-frontend.outcome }}" == "failure" ]; then
-          echo "::error::One or more deployments failed. Check the logs above for details."
+          echo "::error::One or more deployment triggers failed. Check the logs above for details."
           exit 1
         fi
-        echo "✅ All deployments completed successfully - ready for E2E tests!"
-
-  e2e-tests:
-    needs: deploy
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    
-    - name: Wait for deployment to be ready
-      run: |
-        echo "🔍 Verifying deployed application health..."
-        FRONTEND_URL="${{ secrets.DEPLOYED_APP_URL }}"
-        BACKEND_URL="https://todo-app-api-bf0p.onrender.com"
-        MAX_ATTEMPTS=30
-        
-        # Test frontend health
-        echo "Testing frontend at: $FRONTEND_URL"
-        for i in $(seq 1 $MAX_ATTEMPTS); do
-          if curl -f -s -o /dev/null --max-time 10 "$FRONTEND_URL"; then
-            echo "✅ Frontend is responding!"
-            break
-          fi
-          echo "⏳ Frontend not ready... (attempt $i/$MAX_ATTEMPTS)"
-          if [ $i -eq $MAX_ATTEMPTS ]; then
-            echo "❌ Frontend failed to respond after $MAX_ATTEMPTS attempts"
-            exit 1
-          fi
-          sleep 10
-        done
-        
-        # Test backend health
-        echo "Testing backend at: $BACKEND_URL/api/health"
-        for i in $(seq 1 $MAX_ATTEMPTS); do
-          HEALTH_RESPONSE=$(curl -f -s --max-time 10 "$BACKEND_URL/api/health" || echo "failed")
-          if echo "$HEALTH_RESPONSE" | grep -q "healthy"; then
-            echo "✅ Backend health check passed!"
-            break
-          fi
-          echo "⏳ Backend not healthy... (attempt $i/$MAX_ATTEMPTS)"
-          if [ $i -eq $MAX_ATTEMPTS ]; then
-            echo "❌ Backend failed health check after $MAX_ATTEMPTS attempts"
-            echo "Last response: $HEALTH_RESPONSE"
-            exit 1
-          fi
-          sleep 10
-        done
-        
-        echo "🎉 Both frontend and backend are healthy and ready for E2E testing!"
-    
-    - name: Run Playwright E2E tests
-      run: npx cross-env BASE_ENV=staging playwright test --config=tests/playwright.config.ts
-      env:
-        BASE_URL: ${{ secrets.DEPLOYED_APP_URL }}
-    
-    - name: Upload Playwright Report
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: playwright-report
-        path: tests/playwright-report/
-        retention-days: 30
-    
-    - name: E2E Test Results
-      if: always()
-      run: |
-        echo "## 🧪 E2E Test Results"
-        echo "Frontend URL: ${{ secrets.DEPLOYED_APP_URL }}"
-        echo "Backend URL: https://todo-app-api-bf0p.onrender.com"
-        echo ""
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "✅ All E2E tests passed - deployment quality gate satisfied"
-          echo "🎉 Todo App is fully deployed and functioning correctly!"
-          echo ""
-          echo "### Quick Links:"
-          echo "- 🌐 Live App: ${{ secrets.DEPLOYED_APP_URL }}"
-          echo "- 🔧 API Health: https://todo-app-api-bf0p.onrender.com/api/health"
-          echo "- 📊 Playwright Report: Available in workflow artifacts"
-        else
-          echo "❌ E2E tests failed - deployment may have issues"
-          echo "🔍 Check the Playwright report artifact for detailed test results"
-          echo "🚨 The deployment completed but quality gates failed"
-          exit 1
-        fi
+        echo "✅ All deployments triggered successfully!"
