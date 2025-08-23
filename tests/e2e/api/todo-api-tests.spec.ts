@@ -1,5 +1,5 @@
-import { test, expect } from '../../pages/page_fixtures';
-import { TestTodos } from '../../test-data/test-data';
+import { test, expect } from '../../src/fixtures/page_fixtures';
+import { TestTodos } from '../../src/constants';
 
 test.describe('Todo API - Backend Tests', () => {
 

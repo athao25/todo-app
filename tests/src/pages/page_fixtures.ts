@@ -1,12 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 import { TodoPage } from './todoPage';
 import { TodoApiClient } from '../api-client/todoApiClient';
-
-// Define the test fixtures interface
-interface TestFixtures {
-  todoPage: TodoPage;
-  todoApiClient: TodoApiClient;
-}
+import { TestFixtures } from '../interfaces/testFixtures';
 
 // Create custom test with page fixtures following Checkly patterns
 export const test = base.extend<TestFixtures>({

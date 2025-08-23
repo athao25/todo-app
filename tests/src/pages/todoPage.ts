@@ -1,12 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
 
-export interface Todo {
-  id?: number;
-  title: string;
-  completed: boolean;
-  created_at?: string;
-}
-
 /**
  * Page Object Model for Todo Application
  * Encapsulates all UI interactions and element selectors

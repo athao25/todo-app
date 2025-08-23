@@ -1,5 +1,5 @@
-import { test, expect } from '../../pages/page_fixtures';
-import { TestTodos, TimeDisplayPatterns } from '../../test-data/test-data';
+import { test, expect } from '../../src/fixtures/page_fixtures';
+import { TestTodos, TimeDisplayPatterns } from '../../src/constants';
 
 test.describe('Todo App - UI Smoke Tests', () => {
 
