@@ -1,0 +1,15 @@
+{
+  "name": "todo-app-root",
+  "version": "1.0.0",
+  "description": "Todo App - Root package for development scripts",
+  "scripts": {
+    "init:db": "cd ../ && ./init.sh",
+    "start": "cd ../ && ./start.sh",
+    "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athao25/todo-app.git"
+  },
+  "license": "ISC"
+}

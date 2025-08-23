@@ -1,0 +1,441 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - heading "To Do List" [level=1] [ref=e5]
+  - generic [ref=e6]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - textbox "What needs to be done?" [active] [ref=e12]
+        - generic [ref=e14]: 0/250
+      - button "Add Todo" [disabled] [ref=e15]
+    - generic [ref=e16]:
+      - button "All" [ref=e17] [cursor=pointer]
+      - button "Active" [ref=e18] [cursor=pointer]
+      - button "Completed" [ref=e19] [cursor=pointer]
+    - generic [ref=e22]:
+      - generic [ref=e24] [cursor=pointer]:
+        - button [ref=e25] [cursor=pointer]
+        - generic [ref=e27] [cursor=pointer]:
+          - heading "Schedule dentist appointment" [level=4] [ref=e28] [cursor=pointer]
+          - paragraph [ref=e29] [cursor=pointer]: Created just now
+        - generic [ref=e30] [cursor=pointer]:
+          - button "Edit todo" [ref=e31] [cursor=pointer]:
+            - img [ref=e32] [cursor=pointer]
+          - button "Delete todo" [ref=e34] [cursor=pointer]:
+            - img [ref=e35] [cursor=pointer]
+      - generic [ref=e38] [cursor=pointer]:
+        - button [ref=e39] [cursor=pointer]
+        - generic [ref=e41] [cursor=pointer]:
+          - heading "Buy groceries for the week" [level=4] [ref=e42] [cursor=pointer]
+          - paragraph [ref=e43] [cursor=pointer]: Created just now
+        - generic [ref=e44] [cursor=pointer]:
+          - button "Edit todo" [ref=e45] [cursor=pointer]:
+            - img [ref=e46] [cursor=pointer]
+          - button "Delete todo" [ref=e48] [cursor=pointer]:
+            - img [ref=e49] [cursor=pointer]
+      - generic [ref=e52] [cursor=pointer]:
+        - button [ref=e53] [cursor=pointer]
+        - generic [ref=e55] [cursor=pointer]:
+          - heading "Complete project proposal" [level=4] [ref=e56] [cursor=pointer]
+          - paragraph [ref=e57] [cursor=pointer]: Created just now
+        - generic [ref=e58] [cursor=pointer]:
+          - button "Edit todo" [ref=e59] [cursor=pointer]:
+            - img [ref=e60] [cursor=pointer]
+          - button "Delete todo" [ref=e62] [cursor=pointer]:
+            - img [ref=e63] [cursor=pointer]
+      - generic [ref=e66] [cursor=pointer]:
+        - button [ref=e67] [cursor=pointer]
+        - generic [ref=e69] [cursor=pointer]:
+          - heading "Complete project proposal" [level=4] [ref=e70] [cursor=pointer]
+          - paragraph [ref=e71] [cursor=pointer]: Created just now
+        - generic [ref=e72] [cursor=pointer]:
+          - button "Edit todo" [ref=e73] [cursor=pointer]:
+            - img [ref=e74] [cursor=pointer]
+          - button "Delete todo" [ref=e76] [cursor=pointer]:
+            - img [ref=e77] [cursor=pointer]
+      - generic [ref=e80] [cursor=pointer]:
+        - button [ref=e81] [cursor=pointer]
+        - generic [ref=e83] [cursor=pointer]:
+          - heading "Completed todo" [level=4] [ref=e84] [cursor=pointer]
+          - paragraph [ref=e85] [cursor=pointer]: Created just now
+        - generic [ref=e86] [cursor=pointer]:
+          - button "Edit todo" [ref=e87] [cursor=pointer]:
+            - img [ref=e88] [cursor=pointer]
+          - button "Delete todo" [ref=e90] [cursor=pointer]:
+            - img [ref=e91] [cursor=pointer]
+      - generic [ref=e94] [cursor=pointer]:
+        - button [ref=e95] [cursor=pointer]
+        - generic [ref=e97] [cursor=pointer]:
+          - heading "Persistent todo" [level=4] [ref=e98] [cursor=pointer]
+          - paragraph [ref=e99] [cursor=pointer]: Created just now
+        - generic [ref=e100] [cursor=pointer]:
+          - button "Edit todo" [ref=e101] [cursor=pointer]:
+            - img [ref=e102] [cursor=pointer]
+          - button "Delete todo" [ref=e104] [cursor=pointer]:
+            - img [ref=e105] [cursor=pointer]
+      - generic [ref=e108] [cursor=pointer]:
+        - button [ref=e109] [cursor=pointer]
+        - generic [ref=e111] [cursor=pointer]:
+          - heading "Active todo" [level=4] [ref=e112] [cursor=pointer]
+          - paragraph [ref=e113] [cursor=pointer]: Created just now
+        - generic [ref=e114] [cursor=pointer]:
+          - button "Edit todo" [ref=e115] [cursor=pointer]:
+            - img [ref=e116] [cursor=pointer]
+          - button "Delete todo" [ref=e118] [cursor=pointer]:
+            - img [ref=e119] [cursor=pointer]
+      - generic [ref=e122] [cursor=pointer]:
+        - button [ref=e123] [cursor=pointer]
+        - generic [ref=e125] [cursor=pointer]:
+          - heading "Todo to complete" [level=4] [ref=e126] [cursor=pointer]
+          - paragraph [ref=e127] [cursor=pointer]: Created just now
+        - generic [ref=e128] [cursor=pointer]:
+          - button "Edit todo" [ref=e129] [cursor=pointer]:
+            - img [ref=e130] [cursor=pointer]
+          - button "Delete todo" [ref=e132] [cursor=pointer]:
+            - img [ref=e133] [cursor=pointer]
+      - generic [ref=e136] [cursor=pointer]:
+        - button [ref=e137] [cursor=pointer]
+        - generic [ref=e139] [cursor=pointer]:
+          - heading "Completed todo" [level=4] [ref=e140] [cursor=pointer]
+          - paragraph [ref=e141] [cursor=pointer]: Created just now
+        - generic [ref=e142] [cursor=pointer]:
+          - button "Edit todo" [ref=e143] [cursor=pointer]:
+            - img [ref=e144] [cursor=pointer]
+          - button "Delete todo" [ref=e146] [cursor=pointer]:
+            - img [ref=e147] [cursor=pointer]
+      - generic [ref=e150] [cursor=pointer]:
+        - button [ref=e151] [cursor=pointer]
+        - generic [ref=e153] [cursor=pointer]:
+          - heading "Active todo" [level=4] [ref=e154] [cursor=pointer]
+          - paragraph [ref=e155] [cursor=pointer]: Created just now
+        - generic [ref=e156] [cursor=pointer]:
+          - button "Edit todo" [ref=e157] [cursor=pointer]:
+            - img [ref=e158] [cursor=pointer]
+          - button "Delete todo" [ref=e160] [cursor=pointer]:
+            - img [ref=e161] [cursor=pointer]
+      - generic [ref=e164] [cursor=pointer]:
+        - button [ref=e165] [cursor=pointer]
+        - generic [ref=e167] [cursor=pointer]:
+          - heading "Persistent todo" [level=4] [ref=e168] [cursor=pointer]
+          - paragraph [ref=e169] [cursor=pointer]: Created just now
+        - generic [ref=e170] [cursor=pointer]:
+          - button "Edit todo" [ref=e171] [cursor=pointer]:
+            - img [ref=e172] [cursor=pointer]
+          - button "Delete todo" [ref=e174] [cursor=pointer]:
+            - img [ref=e175] [cursor=pointer]
+      - generic [ref=e178] [cursor=pointer]:
+        - button [ref=e179] [cursor=pointer]
+        - generic [ref=e181] [cursor=pointer]:
+          - heading "Active todo" [level=4] [ref=e182] [cursor=pointer]
+          - paragraph [ref=e183] [cursor=pointer]: Created just now
+        - generic [ref=e184] [cursor=pointer]:
+          - button "Edit todo" [ref=e185] [cursor=pointer]:
+            - img [ref=e186] [cursor=pointer]
+          - button "Delete todo" [ref=e188] [cursor=pointer]:
+            - img [ref=e189] [cursor=pointer]
+      - generic [ref=e192] [cursor=pointer]:
+        - button [ref=e193] [cursor=pointer]
+        - generic [ref=e195] [cursor=pointer]:
+          - heading "Test todo item" [level=4] [ref=e196] [cursor=pointer]
+          - paragraph [ref=e197] [cursor=pointer]: Created just now
+        - generic [ref=e198] [cursor=pointer]:
+          - button "Edit todo" [ref=e199] [cursor=pointer]:
+            - img [ref=e200] [cursor=pointer]
+          - button "Delete todo" [ref=e202] [cursor=pointer]:
+            - img [ref=e203] [cursor=pointer]
+      - generic [ref=e206] [cursor=pointer]:
+        - button [ref=e207] [cursor=pointer]
+        - generic [ref=e209] [cursor=pointer]:
+          - heading "Completed todo" [level=4] [ref=e210] [cursor=pointer]
+          - paragraph [ref=e211] [cursor=pointer]: Created just now
+        - generic [ref=e212] [cursor=pointer]:
+          - button "Edit todo" [ref=e213] [cursor=pointer]:
+            - img [ref=e214] [cursor=pointer]
+          - button "Delete todo" [ref=e216] [cursor=pointer]:
+            - img [ref=e217] [cursor=pointer]
+      - generic [ref=e220] [cursor=pointer]:
+        - button [ref=e221] [cursor=pointer]
+        - generic [ref=e223] [cursor=pointer]:
+          - heading "Active todo" [level=4] [ref=e224] [cursor=pointer]
+          - paragraph [ref=e225] [cursor=pointer]: Created just now
+        - generic [ref=e226] [cursor=pointer]:
+          - button "Edit todo" [ref=e227] [cursor=pointer]:
+            - img [ref=e228] [cursor=pointer]
+          - button "Delete todo" [ref=e230] [cursor=pointer]:
+            - img [ref=e231] [cursor=pointer]
+      - generic [ref=e234] [cursor=pointer]:
+        - button [ref=e235] [cursor=pointer]
+        - generic [ref=e237] [cursor=pointer]:
+          - heading "Persistent todo" [level=4] [ref=e238] [cursor=pointer]
+          - paragraph [ref=e239] [cursor=pointer]: Created just now
+        - generic [ref=e240] [cursor=pointer]:
+          - button "Edit todo" [ref=e241] [cursor=pointer]:
+            - img [ref=e242] [cursor=pointer]
+          - button "Delete todo" [ref=e244] [cursor=pointer]:
+            - img [ref=e245] [cursor=pointer]
+      - generic [ref=e248] [cursor=pointer]:
+        - button [ref=e249] [cursor=pointer]
+        - generic [ref=e251] [cursor=pointer]:
+          - heading "Test todo item" [level=4] [ref=e252] [cursor=pointer]
+          - paragraph [ref=e253] [cursor=pointer]: Created just now
+        - generic [ref=e254] [cursor=pointer]:
+          - button "Edit todo" [ref=e255] [cursor=pointer]:
+            - img [ref=e256] [cursor=pointer]
+          - button "Delete todo" [ref=e258] [cursor=pointer]:
+            - img [ref=e259] [cursor=pointer]
+      - generic [ref=e262] [cursor=pointer]:
+        - button [ref=e263] [cursor=pointer]
+        - generic [ref=e265] [cursor=pointer]:
+          - heading "Very recent task" [level=4] [ref=e266] [cursor=pointer]
+          - paragraph [ref=e267] [cursor=pointer]: Created 2 hours ago
+        - generic [ref=e268] [cursor=pointer]:
+          - button "Edit todo" [ref=e269] [cursor=pointer]:
+            - img [ref=e270] [cursor=pointer]
+          - button "Delete todo" [ref=e272] [cursor=pointer]:
+            - img [ref=e273] [cursor=pointer]
+      - generic [ref=e276] [cursor=pointer]:
+        - button [ref=e277] [cursor=pointer]
+        - generic [ref=e279] [cursor=pointer]:
+          - heading "5 minutes ago task" [level=4] [ref=e280] [cursor=pointer]
+          - paragraph [ref=e281] [cursor=pointer]: Created 2 hours ago
+        - generic [ref=e282] [cursor=pointer]:
+          - button "Edit todo" [ref=e283] [cursor=pointer]:
+            - img [ref=e284] [cursor=pointer]
+          - button "Delete todo" [ref=e286] [cursor=pointer]:
+            - img [ref=e287] [cursor=pointer]
+      - generic [ref=e290] [cursor=pointer]:
+        - button [ref=e291] [cursor=pointer]
+        - generic [ref=e293] [cursor=pointer]:
+          - heading "30 minutes ago task" [level=4] [ref=e294] [cursor=pointer]
+          - paragraph [ref=e295] [cursor=pointer]: Created 2 hours ago
+        - generic [ref=e296] [cursor=pointer]:
+          - button "Edit todo" [ref=e297] [cursor=pointer]:
+            - img [ref=e298] [cursor=pointer]
+          - button "Delete todo" [ref=e300] [cursor=pointer]:
+            - img [ref=e301] [cursor=pointer]
+      - generic [ref=e304] [cursor=pointer]:
+        - button [ref=e305] [cursor=pointer]
+        - generic [ref=e307] [cursor=pointer]:
+          - heading "Exactly 1 hour ago task" [level=4] [ref=e308] [cursor=pointer]
+          - paragraph [ref=e309] [cursor=pointer]: Created 3 hours ago
+        - generic [ref=e310] [cursor=pointer]:
+          - button "Edit todo" [ref=e311] [cursor=pointer]:
+            - img [ref=e312] [cursor=pointer]
+          - button "Delete todo" [ref=e314] [cursor=pointer]:
+            - img [ref=e315] [cursor=pointer]
+      - generic [ref=e318] [cursor=pointer]:
+        - button [ref=e319] [cursor=pointer]
+        - generic [ref=e321] [cursor=pointer]:
+          - heading "6 hours ago task" [level=4] [ref=e322] [cursor=pointer]
+          - paragraph [ref=e323] [cursor=pointer]: Created 8 hours ago
+        - generic [ref=e324] [cursor=pointer]:
+          - button "Edit todo" [ref=e325] [cursor=pointer]:
+            - img [ref=e326] [cursor=pointer]
+          - button "Delete todo" [ref=e328] [cursor=pointer]:
+            - img [ref=e329] [cursor=pointer]
+      - generic [ref=e332] [cursor=pointer]:
+        - button [ref=e333] [cursor=pointer]
+        - generic [ref=e335] [cursor=pointer]:
+          - heading "12 hours ago task" [level=4] [ref=e336] [cursor=pointer]
+          - paragraph [ref=e337] [cursor=pointer]: Created 14 hours ago
+        - generic [ref=e338] [cursor=pointer]:
+          - button "Edit todo" [ref=e339] [cursor=pointer]:
+            - img [ref=e340] [cursor=pointer]
+          - button "Delete todo" [ref=e342] [cursor=pointer]:
+            - img [ref=e343] [cursor=pointer]
+      - generic [ref=e346] [cursor=pointer]:
+        - button [ref=e347] [cursor=pointer]
+        - generic [ref=e349] [cursor=pointer]:
+          - heading "Exactly 1 day ago task" [level=4] [ref=e350] [cursor=pointer]
+          - paragraph [ref=e351] [cursor=pointer]: Created 1 day ago
+        - generic [ref=e352] [cursor=pointer]:
+          - button "Edit todo" [ref=e353] [cursor=pointer]:
+            - img [ref=e354] [cursor=pointer]
+          - button "Delete todo" [ref=e356] [cursor=pointer]:
+            - img [ref=e357] [cursor=pointer]
+      - generic [ref=e360] [cursor=pointer]:
+        - button [ref=e361] [cursor=pointer]
+        - generic [ref=e363] [cursor=pointer]:
+          - heading "1 week ago task" [level=4] [ref=e364] [cursor=pointer]
+          - paragraph [ref=e365] [cursor=pointer]: Created 7 days ago
+        - generic [ref=e366] [cursor=pointer]:
+          - button "Edit todo" [ref=e367] [cursor=pointer]:
+            - img [ref=e368] [cursor=pointer]
+          - button "Delete todo" [ref=e370] [cursor=pointer]:
+            - img [ref=e371] [cursor=pointer]
+      - generic [ref=e374] [cursor=pointer]:
+        - button [ref=e375] [cursor=pointer]
+        - generic [ref=e377] [cursor=pointer]:
+          - heading "2 weeks ago task" [level=4] [ref=e378] [cursor=pointer]
+          - paragraph [ref=e379] [cursor=pointer]: Created 14 days ago
+        - generic [ref=e380] [cursor=pointer]:
+          - button "Edit todo" [ref=e381] [cursor=pointer]:
+            - img [ref=e382] [cursor=pointer]
+          - button "Delete todo" [ref=e384] [cursor=pointer]:
+            - img [ref=e385] [cursor=pointer]
+      - generic [ref=e388] [cursor=pointer]:
+        - button [ref=e389] [cursor=pointer]
+        - generic [ref=e391] [cursor=pointer]:
+          - heading "2 months ago task" [level=4] [ref=e392] [cursor=pointer]
+          - paragraph [ref=e393] [cursor=pointer]: Created 60 days ago
+        - generic [ref=e394] [cursor=pointer]:
+          - button "Edit todo" [ref=e395] [cursor=pointer]:
+            - img [ref=e396] [cursor=pointer]
+          - button "Delete todo" [ref=e398] [cursor=pointer]:
+            - img [ref=e399] [cursor=pointer]
+      - generic [ref=e402] [cursor=pointer]:
+        - button [ref=e403] [cursor=pointer]:
+          - img [ref=e404] [cursor=pointer]
+        - generic [ref=e407] [cursor=pointer]:
+          - heading "Test todo item" [level=4] [ref=e408] [cursor=pointer]
+          - paragraph [ref=e409] [cursor=pointer]: Created just now
+        - generic [ref=e410] [cursor=pointer]:
+          - button "Edit todo" [ref=e411] [cursor=pointer]:
+            - img [ref=e412] [cursor=pointer]
+          - button "Delete todo" [ref=e414] [cursor=pointer]:
+            - img [ref=e415] [cursor=pointer]
+      - generic [ref=e418] [cursor=pointer]:
+        - button [ref=e419] [cursor=pointer]:
+          - img [ref=e420] [cursor=pointer]
+        - generic [ref=e423] [cursor=pointer]:
+          - heading "Test todo item" [level=4] [ref=e424] [cursor=pointer]
+          - paragraph [ref=e425] [cursor=pointer]: Created just now
+        - generic [ref=e426] [cursor=pointer]:
+          - button "Edit todo" [ref=e427] [cursor=pointer]:
+            - img [ref=e428] [cursor=pointer]
+          - button "Delete todo" [ref=e430] [cursor=pointer]:
+            - img [ref=e431] [cursor=pointer]
+      - generic [ref=e434] [cursor=pointer]:
+        - button [ref=e435] [cursor=pointer]:
+          - img [ref=e436] [cursor=pointer]
+        - generic [ref=e439] [cursor=pointer]:
+          - heading "Completed todo" [level=4] [ref=e440] [cursor=pointer]
+          - paragraph [ref=e441] [cursor=pointer]: Created just now
+        - generic [ref=e442] [cursor=pointer]:
+          - button "Edit todo" [ref=e443] [cursor=pointer]:
+            - img [ref=e444] [cursor=pointer]
+          - button "Delete todo" [ref=e446] [cursor=pointer]:
+            - img [ref=e447] [cursor=pointer]
+      - generic [ref=e450] [cursor=pointer]:
+        - button [ref=e451] [cursor=pointer]:
+          - img [ref=e452] [cursor=pointer]
+        - generic [ref=e455] [cursor=pointer]:
+          - heading "Persistent todo" [level=4] [ref=e456] [cursor=pointer]
+          - paragraph [ref=e457] [cursor=pointer]: Created just now
+        - generic [ref=e458] [cursor=pointer]:
+          - button "Edit todo" [ref=e459] [cursor=pointer]:
+            - img [ref=e460] [cursor=pointer]
+          - button "Delete todo" [ref=e462] [cursor=pointer]:
+            - img [ref=e463] [cursor=pointer]
+      - generic [ref=e466] [cursor=pointer]:
+        - button [ref=e467] [cursor=pointer]:
+          - img [ref=e468] [cursor=pointer]
+        - generic [ref=e471] [cursor=pointer]:
+          - heading "Todo to complete" [level=4] [ref=e472] [cursor=pointer]
+          - paragraph [ref=e473] [cursor=pointer]: Created just now
+        - generic [ref=e474] [cursor=pointer]:
+          - button "Edit todo" [ref=e475] [cursor=pointer]:
+            - img [ref=e476] [cursor=pointer]
+          - button "Delete todo" [ref=e478] [cursor=pointer]:
+            - img [ref=e479] [cursor=pointer]
+      - generic [ref=e482] [cursor=pointer]:
+        - button [ref=e483] [cursor=pointer]:
+          - img [ref=e484] [cursor=pointer]
+        - generic [ref=e487] [cursor=pointer]:
+          - heading "Todo to delete" [level=4] [ref=e488] [cursor=pointer]
+          - paragraph [ref=e489] [cursor=pointer]: Created just now
+        - generic [ref=e490] [cursor=pointer]:
+          - button "Edit todo" [ref=e491] [cursor=pointer]:
+            - img [ref=e492] [cursor=pointer]
+          - button "Delete todo" [ref=e494] [cursor=pointer]:
+            - img [ref=e495] [cursor=pointer]
+      - generic [ref=e498] [cursor=pointer]:
+        - button [ref=e499] [cursor=pointer]:
+          - img [ref=e500] [cursor=pointer]
+        - generic [ref=e503] [cursor=pointer]:
+          - heading "Todo to complete" [level=4] [ref=e504] [cursor=pointer]
+          - paragraph [ref=e505] [cursor=pointer]: Created just now
+        - generic [ref=e506] [cursor=pointer]:
+          - button "Edit todo" [ref=e507] [cursor=pointer]:
+            - img [ref=e508] [cursor=pointer]
+          - button "Delete todo" [ref=e510] [cursor=pointer]:
+            - img [ref=e511] [cursor=pointer]
+      - generic [ref=e514] [cursor=pointer]:
+        - button [ref=e515] [cursor=pointer]:
+          - img [ref=e516] [cursor=pointer]
+        - generic [ref=e519] [cursor=pointer]:
+          - heading "15 minutes ago task" [level=4] [ref=e520] [cursor=pointer]
+          - paragraph [ref=e521] [cursor=pointer]: Created 2 hours ago
+        - generic [ref=e522] [cursor=pointer]:
+          - button "Edit todo" [ref=e523] [cursor=pointer]:
+            - img [ref=e524] [cursor=pointer]
+          - button "Delete todo" [ref=e526] [cursor=pointer]:
+            - img [ref=e527] [cursor=pointer]
+      - generic [ref=e530] [cursor=pointer]:
+        - button [ref=e531] [cursor=pointer]:
+          - img [ref=e532] [cursor=pointer]
+        - generic [ref=e535] [cursor=pointer]:
+          - heading "45 minutes ago task" [level=4] [ref=e536] [cursor=pointer]
+          - paragraph [ref=e537] [cursor=pointer]: Created 3 hours ago
+        - generic [ref=e538] [cursor=pointer]:
+          - button "Edit todo" [ref=e539] [cursor=pointer]:
+            - img [ref=e540] [cursor=pointer]
+          - button "Delete todo" [ref=e542] [cursor=pointer]:
+            - img [ref=e543] [cursor=pointer]
+      - generic [ref=e546] [cursor=pointer]:
+        - button [ref=e547] [cursor=pointer]:
+          - img [ref=e548] [cursor=pointer]
+        - generic [ref=e551] [cursor=pointer]:
+          - heading "2 hours ago task" [level=4] [ref=e552] [cursor=pointer]
+          - paragraph [ref=e553] [cursor=pointer]: Created 4 hours ago
+        - generic [ref=e554] [cursor=pointer]:
+          - button "Edit todo" [ref=e555] [cursor=pointer]:
+            - img [ref=e556] [cursor=pointer]
+          - button "Delete todo" [ref=e558] [cursor=pointer]:
+            - img [ref=e559] [cursor=pointer]
+      - generic [ref=e562] [cursor=pointer]:
+        - button [ref=e563] [cursor=pointer]:
+          - img [ref=e564] [cursor=pointer]
+        - generic [ref=e567] [cursor=pointer]:
+          - heading "23 hours ago task" [level=4] [ref=e568] [cursor=pointer]
+          - paragraph [ref=e569] [cursor=pointer]: Created 1 day ago
+        - generic [ref=e570] [cursor=pointer]:
+          - button "Edit todo" [ref=e571] [cursor=pointer]:
+            - img [ref=e572] [cursor=pointer]
+          - button "Delete todo" [ref=e574] [cursor=pointer]:
+            - img [ref=e575] [cursor=pointer]
+      - generic [ref=e578] [cursor=pointer]:
+        - button [ref=e579] [cursor=pointer]:
+          - img [ref=e580] [cursor=pointer]
+        - generic [ref=e583] [cursor=pointer]:
+          - heading "3 days ago task" [level=4] [ref=e584] [cursor=pointer]
+          - paragraph [ref=e585] [cursor=pointer]: Created 3 days ago
+        - generic [ref=e586] [cursor=pointer]:
+          - button "Edit todo" [ref=e587] [cursor=pointer]:
+            - img [ref=e588] [cursor=pointer]
+          - button "Delete todo" [ref=e590] [cursor=pointer]:
+            - img [ref=e591] [cursor=pointer]
+      - generic [ref=e594] [cursor=pointer]:
+        - button [ref=e595] [cursor=pointer]:
+          - img [ref=e596] [cursor=pointer]
+        - generic [ref=e599] [cursor=pointer]:
+          - heading "1 month ago task" [level=4] [ref=e600] [cursor=pointer]
+          - paragraph [ref=e601] [cursor=pointer]: Created 30 days ago
+        - generic [ref=e602] [cursor=pointer]:
+          - button "Edit todo" [ref=e603] [cursor=pointer]:
+            - img [ref=e604] [cursor=pointer]
+          - button "Delete todo" [ref=e606] [cursor=pointer]:
+            - img [ref=e607] [cursor=pointer]
+      - generic [ref=e610] [cursor=pointer]:
+        - button [ref=e611] [cursor=pointer]:
+          - img [ref=e612] [cursor=pointer]
+        - generic [ref=e615] [cursor=pointer]:
+          - heading "3 months ago task" [level=4] [ref=e616] [cursor=pointer]
+          - paragraph [ref=e617] [cursor=pointer]: Created 90 days ago
+        - generic [ref=e618] [cursor=pointer]:
+          - button "Edit todo" [ref=e619] [cursor=pointer]:
+            - img [ref=e620] [cursor=pointer]
+          - button "Delete todo" [ref=e622] [cursor=pointer]:
+            - img [ref=e623] [cursor=pointer]
+```
