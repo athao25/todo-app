@@ -5,11 +5,12 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-    types: [ opened, synchronize, reopened ]
+    types: [ opened, synchronize, reopened, closed ]
 
 jobs:
   test-frontend:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     
     steps:
     - uses: actions/checkout@v4
@@ -38,6 +39,7 @@ jobs:
 
   test-backend:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     
     services:
       postgres:
@@ -84,9 +86,8 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/todo_db_test
 
   deploy:
-    needs: [test-frontend, test-backend]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     
     steps:
     - uses: actions/checkout@v4
