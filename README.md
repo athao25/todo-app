@@ -25,38 +25,88 @@ A minimal, elegant todo application built with Vue.js frontend and Flask backend
 
 ```
 todo-app/
-├── frontend/              # Vue.js application
+├── package.json           # Root workspace configuration
+├── package-lock.json      # Workspace dependency lock
+├── WORKSPACES.md          # Workspace usage guide
+├── frontend/              # Vue.js application (workspace)
+│   ├── package.json       # Frontend dependencies
 │   ├── src/
 │   │   ├── components/    # Reusable Vue components
 │   │   ├── views/         # Page-level components
 │   │   ├── stores/        # Pinia state management
 │   │   ├── services/      # API service layer
 │   │   └── types/         # TypeScript type definitions
-├── backend/               # Flask API server
+├── backend/               # Flask API server (Python)
 │   ├── app.py            # Main Flask application
 │   ├── models.py         # Database models
 │   ├── config.py         # Configuration management
 │   └── requirements.txt  # Python dependencies
+├── tests/                 # E2E tests (workspace)
+│   ├── package.json      # Test dependencies
+│   ├── playwright.config.ts
+│   └── e2e/              # Test files
 ├── docker-compose.yml    # Development environment
-├── setup.sh             # Automated setup script
+├── db_init.sh           # Database initialization script
+├── start.sh             # Server startup script
 └── README.md
 ```
 
 ## 🛠️ Quick Setup (Recommended)
 
-### Option 1: Automated Setup Script
+### Option 1: npm Workspaces (Recommended)
+
+The project now uses npm workspaces for unified script management:
 
 ```bash
 # Clone and navigate to the project
 git clone <repository-url>
 cd todo-app
 
-# Run the automated setup script
-chmod +x setup.sh
-./setup.sh
+# Install all dependencies (JavaScript + Python)
+npm run install:all
+
+# Start both servers simultaneously
+npm run dev
 ```
 
-### Option 2: Docker Compose (Easiest)
+**Available npm Scripts:**
+```bash
+# Development
+npm run dev          # Start both backend + frontend servers
+npm run dev:frontend # Start only frontend (Vue.js)
+npm run dev:backend  # Start only backend (Flask)
+
+# Testing
+npm run test         # Run all Playwright tests
+npm run test:ui      # Run tests in interactive UI mode
+npm run test:headed  # Run tests in headed browser mode
+
+# Building & Type Checking
+npm run build        # Build frontend for production
+npm run type-check   # TypeScript type checking
+npm run preview      # Preview production build
+
+# Maintenance
+npm run clean        # Clean all build artifacts
+npm run lint         # Run linting across workspaces
+npm run format       # Format code across workspaces
+
+# Setup & Installation
+npm run install:all      # Install all dependencies
+npm run install:backend  # Install only Python dependencies
+npm run setup           # Run initialization script (./db_init.sh)
+npm run start           # Run startup script (./start.sh)
+```
+
+### Option 2: Automated Setup Script
+
+```bash
+# Run the automated setup script
+chmod +x db_init.sh
+./db_init.sh
+```
+
+### Option 3: Docker Compose
 
 ```bash
 # Start all services with Docker
@@ -174,6 +224,17 @@ docker run --name todo-postgres -e POSTGRES_DB=todo_app -e POSTGRES_PASSWORD=pas
 
 ### Running in Development Mode
 
+**Recommended (npm workspaces):**
+```bash
+# Start both servers with one command
+npm run dev
+
+# Or start individually
+npm run dev:backend   # Flask server only
+npm run dev:frontend  # Vue.js server only
+```
+
+**Manual (if needed):**
 1. **Backend** (Terminal 1):
 ```bash
 cd backend
@@ -187,10 +248,29 @@ cd frontend
 npm run dev
 ```
 
+### Testing
+
+```bash
+# Run all tests
+npm run test
+
+# Interactive test mode with UI
+npm run test:ui
+
+# Run tests with browser visible
+npm run test:headed
+
+# View test reports
+npm run test:report --workspace=tests
+```
+
 ### Building for Production
 
 ```bash
-# Frontend
+# Build frontend (via workspace)
+npm run build
+
+# Or manually
 cd frontend
 npm run build
 

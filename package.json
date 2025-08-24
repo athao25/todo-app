@@ -1,0 +1,48 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Full-stack Todo Application with Flask backend and Vue.js frontend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "tests"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm:dev:*\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "dev:backend": "cd backend && source venv/bin/activate && python app.py",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "build": "npm run build --workspace=frontend",
+    "test": "npm run test --workspace=tests",
+    "test:ui": "npm run test:e2e:ui --workspace=tests",
+    "test:headed": "npm run test:e2e:headed --workspace=tests",
+    "type-check": "npm run type-check --workspace=frontend",
+    "preview": "npm run preview --workspace=frontend",
+    "install:backend": "cd backend && pip install -r requirements.txt",
+    "install:all": "npm install && npm run install:backend",
+    "setup": "./db_init.sh",
+    "start": "./start.sh",
+    "clean": "npm run clean --workspaces --if-present && cd backend && rm -rf __pycache__ .pytest_cache",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "npm run format --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athao25/todo-app.git"
+  },
+  "keywords": [
+    "todo",
+    "flask",
+    "vue",
+    "typescript",
+    "postgresql"
+  ],
+  "author": "",
+  "license": "ISC"
+}
